@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chapter 4: Handcrafted Love Keepsake ✨💌</title>
+    
+    <!-- Romantic & Handwritten Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@700&family=Montserrat:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Reenie+Beanie&family=Space+Grotesk:wght@600&display=swap" rel="stylesheet">
+
+    <!-- GSAP for Smooth Paper Physics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        :root {
+            --kraft: #dfc8ae;
+            --cream: #faf5ee;
+            --blush: #fceade;
+            --parchment: #f3e9dc;
+            --sage: #e3ebd9;
+            --rose-petal: #ffebee;
+            --ink-black: #2b1e1a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 45%, #251022 0%, #110413 70%, #050108 100%);
+            font-family: 'Montserrat', sans-serif;
+            color: #fff;
+            perspective: 1400px;
+        }
+
+        /* Ambient Bokeh Canvas */
+        #particleCanvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Minimalist Top Header */
+        .top-nav {
+            position: fixed;
+            top: 12px;
+            left: 0;
+            width: 100%;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .nav-btn {
+            pointer-events: auto;
+            background: rgba(35, 12, 40, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 5px 12px;
+            border-radius: 20px;
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(60, 20, 70, 0.9);
+            transform: translateY(-1px);
+        }
+
+        .mode-toggle-btn {
+            pointer-events: auto;
+            background: linear-gradient(135deg, #ffd54f, #ff9800);
+            color: #211003;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(255, 152, 0, 0.3);
+            transition: transform 0.2s;
+            display: none;
+        }
+
+        .mode-toggle-btn:hover {
+            transform: scale(1.04);
+        }
+
+        /* ================= INTRO STAGE: GENTLE KEEPSAKE BOX ================= */
+        .intro-box-stage {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        .intro-box-stage.opened {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .keepsake-parcel {
+            position: relative;
+            width: 270px;
+            height: 180px;
+            background: #d8baa1;
+            border-radius: 14px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.65);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+            border: 1px solid #caa88a;
+            will-change: transform;
+        }
+
+        .keepsake-parcel:hover {
+            transform: scale(1.03) rotate(-1deg);
+        }
+
+        .ribbon-h {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            width: 100%;
+            height: 26px;
+            background: #ff4081;
+        }
+
+        .ribbon-v {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            width: 26px;
+            height: 100%;
+            background: #ff4081;
+        }
+
+        .ribbon-bow {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            background: radial-gradient(circle at 35% 35%, #ff80ab, #f50057);
+            border-radius: 50%;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.35rem;
+            z-index: 10;
+        }
+
+        .intro-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #ffe6eb;
+            margin-top: 22px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+            text-align: center;
+        }
+
+        .intro-sub {
+            font-family: 'Caveat', cursive;
+            font-size: 1.2rem;
+            color: #ffb6c1;
+            margin-top: 4px;
+        }
+
+        .open-box-btn {
+            margin-top: 15px;
+            background: linear-gradient(135deg, #ff4081, #f50057);
+            color: #fff;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 25px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(245, 0, 87, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .open-box-btn:hover {
+            transform: scale(1.04);
+        }
+
+        /* ================= 3D STAGE & CARDS VIEWPORT ================= */
+        .stage-viewport {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+            padding-bottom: 45px;
+        }
+
+        .stage-viewport.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 3D CARD DECK CONTAINER */
+        .deck-container {
+            position: relative;
+            width: 320px;
+            height: 440px;
+            transform-style: preserve-3d;
+            cursor: grab;
+            will-change: transform;
+        }
+
+        .deck-container:active {
+            cursor: grabbing;
+        }
+
+        /* INDIVIDUAL HANDMADE CARD */
+        .card-item {
+            position: absolute;
+            inset: 0;
+            border-radius: 15px;
+            padding: 20px 18px;
+            color: var(--ink-black);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transform-style: preserve-3d;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+        }
+
+        .card-item.active-shadow {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Paper Styles */
+        .bg-kraft        { background: var(--kraft); }
+        .bg-cream        { background: var(--cream); }
+        .bg-blush        { background: var(--blush); }
+        .bg-parchment    { background: var(--parchment); }
+        .bg-sage         { background: var(--sage); }
+        .bg-rose-petal   { background: var(--rose-petal); }
+        .bg-grand-finale { 
+            background: radial-gradient(circle at center, #fff9e6 0%, #fff1c2 65%, #ffd54f 100%);
+            border: 2px solid #d4af37;
+        }
+
+        /* Hand-Stitched Border */
+        .card-item::before {
+            content: '';
+            position: absolute;
+            inset: 7px;
+            border: 1.5px dashed rgba(110, 70, 30, 0.35);
+            border-radius: 9px;
+            pointer-events: none;
+        }
+
+        .bg-grand-finale::before {
+            border: 2px dashed #b8860b;
+        }
+
+        /* Washi Tape Accent */
+        .washi-strip {
+            position: absolute;
+            top: -9px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-1.5deg);
+            width: 90px;
+            height: 20px;
+            background: #ffb7b2;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+            border-left: 2px dashed #fff;
+            border-right: 2px dashed #fff;
+            z-index: 10;
+        }
+
+        .washi-gold   { background: #e2b459; transform: translateX(-50%) rotate(2deg); }
+        .washi-grid   { background: #b5deed; transform: translateX(-50%) rotate(-1deg); }
+        .washi-stripes{ background: #e2c7eb; transform: translateX(-50%) rotate(1.5deg); }
+        .washi-heart  { background: #ff8da1; transform: translateX(-50%) rotate(-2deg); }
+
+        /* Card Header & Badge */
+        .card-header-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2px;
+        }
+
+        .card-stamp-badge {
+            font-size: 0.62rem;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: #8c5a32;
+            background: rgba(140, 90, 50, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(140, 90, 50, 0.2);
+        }
+
+        .card-num-badge {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #b08968;
+        }
+
+        .card-topic-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.18rem;
+            font-weight: 800;
+            color: #3b1e16;
+            margin: 4px 0 2px 0;
+            text-align: center;
+        }
+
+        /* Handwritten Body */
+        .card-message {
+            font-family: 'Caveat', cursive;
+            font-size: 1.25rem;
+            line-height: 1.38;
+            color: #2b1712;
+            text-align: center;
+            padding: 2px;
+            margin: auto 0;
+        }
+
+        .hl {
+            color: #b71c1c;
+            font-weight: 700;
+            background: rgba(255, 205, 210, 0.5);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+
+        .hl-love {
+            color: #c2185b;
+            font-weight: 700;
+            background: rgba(248, 187, 208, 0.6);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+
+        .hl-gold {
+            color: #8a6500;
+            font-weight: 700;
+            background: rgba(255, 236, 179, 0.65);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+
+        .hl-math {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.98rem;
+            font-weight: 800;
+            color: #0d47a1;
+        }
+
+        /* Footer */
+        .card-footer-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px dashed rgba(110, 70, 30, 0.22);
+            padding-top: 6px;
+        }
+
+        .card-doodle-icon {
+            font-size: 1.35rem;
+        }
+
+        .card-love-sign {
+            font-family: 'Reenie Beanie', cursive;
+            font-size: 1.15rem;
+            color: #8a5a36;
+        }
+
+        /* ================= SPREAD GALLERY VIEW ================= */
+        .gallery-grid-view {
+            position: fixed;
+            inset: 0;
+            background: rgba(8, 2, 12, 0.96);
+            z-index: 150;
+            overflow-y: auto;
+            padding: 65px 16px 30px 16px;
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .gallery-grid-view.active {
+            display: grid;
+        }
+
+        .gallery-card-item {
+            border-radius: 12px;
+            padding: 16px 14px;
+            color: var(--ink-black);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 310px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            border: 1px solid rgba(0,0,0,0.1);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .gallery-card-item:hover {
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        /* COMPACT, NON-INTRUSIVE BOTTOM CONTROLS DOCK */
+        .deck-dock {
+            position: fixed;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(22, 7, 30, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 5px 14px;
+            border-radius: 30px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 90;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+        }
+
+        .dock-btn {
+            background: linear-gradient(135deg, #ff4081, #f50057);
+            color: #fff;
+            border: none;
+            padding: 5px 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 8px rgba(245, 0, 87, 0.3);
+            white-space: nowrap;
+        }
+
+        .dock-btn:hover {
+            transform: scale(1.04);
+        }
+
+        .counter-badge {
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: #ffd2e5;
+            white-space: nowrap;
+        }
+
+        .celebrate-btn {
+            display: none;
+            background: linear-gradient(135deg, #ffd700, #ff9100);
+            color: #211003;
+            border: none;
+            padding: 5px 14px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            border-radius: 18px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            animation: pulseFoil 1.8s infinite alternate;
+        }
+
+        @keyframes pulseFoil {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        @media (max-width: 768px) {
+            .deck-container { width: 84vw; height: 60vh; }
+            .card-message { font-size: 1.15rem; }
+            .card-topic-title { font-size: 1.05rem; }
+            .keepsake-parcel { width: 250px; height: 170px; }
+            .stage-viewport { padding-bottom: 50px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Particle Canvas -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Top UI Header -->
+    <div class="top-nav">
+        <button class="nav-btn" onclick="window.location.href='page3.html'">🌊 Back</button>
+        <button class="mode-toggle-btn" id="toggleSpreadBtn" onclick="toggleSpreadView()">🎴 View All 19</button>
+        <button class="nav-btn" id="soundBtn" onclick="toggleMusic()">🎵 Music: On</button>
+    </div>
+
+    <!-- ================= INTRO STAGE ================= -->
+    <div class="intro-box-stage" id="introBoxStage">
+        <div class="keepsake-parcel" onclick="openKeepsakeBox()">
+            <div class="ribbon-h"></div>
+            <div class="ribbon-v"></div>
+            <div class="ribbon-bow">🎀</div>
+        </div>
+        <div class="intro-title">A Keepsake Box for You</div>
+        <div class="intro-sub">MAINE KHUD SOCHE aur LIKHE HAI no copy</div>
+        <button class="open-box-btn" onclick="openKeepsakeBox()">Untie Ribbon & Open 💕</button>
+    </div>
+
+    <!-- ================= 3D STAGE & CARDS STACK ================= -->
+    <div class="stage-viewport" id="stageViewport">
+        <div class="deck-container" id="deckContainer">
+            <!-- 19 Handcrafted Cards Injected by JavaScript -->
+        </div>
+    </div>
+
+    <!-- ================= SPREAD GALLERY VIEW ================= -->
+    <div class="gallery-grid-view" id="galleryGridView">
+        <!-- 19 Spread Cards Rendered Here -->
+    </div>
+
+    <!-- COMPACT BOTTOM CONTROLS DOCK -->
+    <div class="deck-dock" id="deckDock">
+        <button class="dock-btn" onclick="prevCard()">◀ Prev</button>
+        <div class="counter-badge" id="cardCounterText">Card 1 of 19</div>
+        <button class="dock-btn" id="nextCardBtn" onclick="nextCard()">Next ▶</button>
+        <button class="celebrate-btn" id="celebrateBtn" onclick="triggerHeartCelebration()"> HAPPY BIRTHDAY DARLING </button>
+    </div>
+
+    <!-- ================= STAGED IMAGES FOR SECURE BUILDER V13 ================= -->
+    <div style="display: none;" aria-hidden="true">
+        <img id="raw_card_img_1" src="card_photo1.jpg">
+        <img id="raw_card_img_2" src="card_photo2.jpg">
+    </div>
+
+    <!-- ================= 19 CARDS DATA & INTERACTION LOGIC ================= -->
+    <script>
+        /* ================= 19 PLAYFUL + APPRECIATION + GRAND FINALE CARDS ================= */
+        const cardsData = [
+            // 01. Chemistry Paper
+            {
+                num: "01",
+                tag: "CHEMISTRY DEPT. 🧪",
+                title: "Research Proposal",
+                text: "I want to publish science papers, about <span class='hl'>'Our Chemistry'</span>. 🔬✨",
+                doodle: "🧪⚗️",
+                bg: "bg-kraft",
+                tape: "washi-strip"
+            },
+            // 02. Appreciation (My Safe Place)
+            {
+                num: "02",
+                tag: "MY SAFE PLACE 🏡",
+                title: "Where I Belong",
+                text: "Okay bad start But Beyond all the jokes, when the world gets loud and heavy, <span class='hl-love'>your voice is the only peace I search for</span>. You are my safe place. 🫂❤️",
+                doodle: "🏡💖",
+                bg: "bg-rose-petal",
+                tape: "washi-heart"
+            },
+            // 03. Practicals
+            {
+                num: "03",
+                tag: "LAB PRACTICALS 🧬",
+                title: "Science Struggle",
+                text: "Being a science student is so hard... imagine learning chemistry and biology, when I could be doing <span class='hl'>practicals of both with you</span>.... 😉🥼 WANNA??",
+                doodle: "🧬❤️",
+                bg: "bg-cream",
+                tape: "washi-grid"
+            },
+            // 04. Circuit Theory / Electricity
+            {
+                num: "04",
+                tag: "CIRCUIT THEORY ⚡",
+                title: "Power Cut Scheme",
+                text: "I study electronics... so that I can <span class='hl'>cut the electricity</span> when we are alone at night. 💡🔌😁",
+                doodle: "⚡🕯️",
+                bg: "bg-sage",
+                tape: "washi-stripes"
+            },
+            // 05. Appreciation (Effortless Beauty)
+            {
+                num: "05",
+                tag: "EFFORTLESS BEAUTY 🌸",
+                title: "Prettiest Smile",
+                text: "You don't even realize how effortlessly stunning you are. Everytime, even with zero effort, <span class='hl-love'>you take my breath away every single time i see you</span>. ✨🥺",
+                doodle: "🌸🥰",
+                bg: "bg-blush",
+                tape: "washi-gold"
+            },
+            // 06. Bitcoin 2008 / Butku-oin
+            {
+                num: "06",
+                tag: "BITCOIN 2008 🪙",
+                title: "My Favorite Coin",
+                text: "I didn't find it surprising that Bitcoin was born in 2008...<br><br><span class='hl-gold'>Happy Birthday My Butku-oin!</span> 🪙🎂✨",
+                doodle: "🪙💖",
+                bg: "bg-parchment",
+                tape: "washi-gold"
+            },
+            // 07. Integration / Infinity
+            {
+                num: "07",
+                tag: "INTEGRATION 📐",
+                title: "Definite Integral",
+                text: "When I integrated <span class='hl'>Your Prettiness</span> from zero to forever, I got a rotated 8: 🧐",
+                doodle: "♾️📐",
+                bg: "bg-cream",
+                tape: "washi-strip"
+            },
+            // 08. Appreciation (Sweetest Soul)
+            {
+                num: "08",
+                tag: "PURE HEART 🥺",
+                title: "The Sweetest Soul",
+                text: "Today is your birthday, My Cute, MY PRETTY, MY WIFEYS BIRTHDAY, I want to<span class='hl-love'>be the best man for you every single day</span>. 🌷🤍",
+                doodle: "🕊️💖",
+                bg: "bg-rose-petal",
+                tape: "washi-heart"
+            },
+            // 09. BUTKU
+            {
+                num: "09",
+                tag: "RAMANUJAN VIBES 🧮",
+                title: "Sweet Dreams",
+                text: "Ramanujan dreams of mathematics... but I dream of your <span class='hl'>cute 'Gaals'</span>! 😍🥟",
+                doodle: "🤤🥟",
+                bg: "bg-blush",
+                tape: "washi-grid"
+            },
+            // 10. Golden Ratio / Phi
+            {
+                num: "10",
+                tag: "GOLDEN RATIO 📏",
+                title: "Divine Proportion",
+                text: "Mathematicians spent centuries searching for the Golden Ratio... but I found my value of <span class='hl'>'Phi' (Φ)</span> just by looking at you. ✨",
+                doodle: "✨🌀",
+                bg: "bg-parchment",
+                tape: "washi-gold"
+            },
+            // 11. Appreciation (My Biggest Blessing)
+            {
+                num: "11",
+                tag: "MY BLESSING ✨",
+                title: "Thank You For You",
+                text: "I will do everything I can to keep you happy my wifey, THANKS YOU... HAPPY BIRTHDAY AS WELL and <span class='hl-love'> </span> You are Everything i need",
+                doodle: "🌟🙏",
+                bg: "bg-sage",
+                tape: "washi-stripes"
+            },
+            // 12. Finance / Zero Loan
+            {
+                num: "12",
+                tag: "BANKING & FINANCE 💳",
+                title: "Zero Loan Policy",
+                text: "Wait I didn't take any loan... but I still pay <span class='hl'>a lot of interest</span> to you! 📈💸❤️",
+                doodle: "📈💰",
+                bg: "bg-kraft",
+                tape: "washi-stripes"
+            },
+            // 13. Cosmos / Small world Butku
+            {
+                num: "13",
+                tag: "COSMOS 🌍",
+                title: "Literal Truth",
+                text: "They say the universe is infinite, but <span class='hl'>my whole world is small small</span>, literally. (Because it's you, my Butku!) 🤏🏻🌍💖",
+                doodle: "🌍🤏🏻",
+                bg: "bg-cream",
+                tape: "washi-strip"
+            },
+            // 14. Doctor's Orders / Gaals
+            {
+                num: "14",
+                tag: "PRESCRIPTION 💊",
+                title: "Doctor's Orders",
+                text: "I got a serious vitamin deficiency... Doctor suggested I must <span class='hl'>eat your cute gaals</span>!👉🏻👈🏻🥺",
+                doodle: "💊🥟",
+                bg: "bg-blush",
+                tape: "washi-grid"
+            },
+            // 15. Economics / No DMU
+            {
+                num: "15",
+                tag: "ECONOMICS 101 📊",
+                title: "No Law Applies",
+                text: "I don't understand commerce, but I do understand that for my love for you, there is <span class='hl'>NO DMU</span> (Diminishing Marginal Utility)! It only grows! 📈❤️ [Sorry hehe]",
+                doodle: "📊📈",
+                bg: "bg-kraft",
+                tape: "washi-strip"
+            },
+            // 16. Physics / Iodine wants u
+            {
+                num: "16",
+                tag: "MECHANICS 🏎️",
+                title: "Physics Notation",
+                text: " <span class='hl'></span> Iodine wants <span class='hl'>''</span> Initial Velocity... which clearly means??? <span class='hl'></span>! 🏎️💨",
+                doodle: "💡🚗",
+                bg: "bg-cream",
+                tape: "washi-grid"
+            },
+            // 17. Keyboard T-I
+            {
+                num: "17",
+                tag: "KEYBOARD SHORTCUT ⌨️",
+                title: "Secret Key",
+                text: "Do you know who I love the most in this entire universe?<br><br><span class='hl'>Look between 'T' and 'I' on your keyboard.</span> 👀⌨️ ",
+                doodle: "⌨️🎯",
+                bg: "bg-sage",
+                tape: "washi-stripes"
+            },
+            // 18. Appreciation (Lifetime Decision)
+            {
+                num: "18",
+                tag: "MY FOREVER 💍",
+                title: "Easiest Choice",
+                text: "Out of every single choice in my life, choosing you and giving you my heart will forever be <span class='hl-love'>the easiest and best decision I will ever make</span>. 🔐❤️",
+                doodle: "💍💫",
+                bg: "bg-rose-petal",
+                tape: "washi-heart"
+            },
+            // 19. GRAND FINALE BIRTHDAY QUEEN CARD
+            {
+                num: "19",
+                tag: "👑 TO MY BIRTHDAY QUEEN 👑",
+                title: "Happiest Birthday, My Love!",
+                text: "Happy Birthday to the most BEAUTIFUL girl in the world! Thank you for filling my life with so much laughter, Sparks, and magic. May this year bring you all the endless joy my babe deserves.<br><br><span class='hl-gold'>I love you beyond words, beyond time, and beyond infinity! 🎂🎉💖✨</span>",
+                doodle: "👑🍰💐🎁",
+                bg: "bg-grand-finale",
+                tape: "washi-gold"
+            }
+        ];
+
+        let activeCardIndex = 0;
+        const totalCardsCount = cardsData.length;
+        let isSpreadActive = false;
+        let isBoxOpened = false;
+
+        /* ================= OPEN KEEPSAKE BOX ================= */
+        function openKeepsakeBox() {
+            if (isBoxOpened) return;
+            isBoxOpened = true;
+
+            playPaperShuffleSound();
+            playRomanticChords();
+
+            const introStage = document.getElementById('introBoxStage');
+            const stageViewport = document.getElementById('stageViewport');
+            const deckDock = document.getElementById('deckDock');
+            const toggleSpreadBtn = document.getElementById('toggleSpreadBtn');
+
+            introStage.classList.add('opened');
+
+            setTimeout(() => {
+                stageViewport.classList.add('active');
+                deckDock.style.display = 'flex';
+                toggleSpreadBtn.style.display = 'block';
+                buildCardsHTML();
+            }, 400);
+        }
+
+        /* ================= RENDER CARDS ON STAGE ================= */
+        const deckContainer = document.getElementById('deckContainer');
+        const galleryGrid = document.getElementById('galleryGridView');
+
+        function buildCardsHTML() {
+            deckContainer.innerHTML = '';
+            galleryGrid.innerHTML = '';
+
+            cardsData.forEach((c, index) => {
+                // 1. Deck Card
+                const cardEl = document.createElement('div');
+                cardEl.className = `card-item ${c.bg}`;
+                cardEl.id = `deck_card_${index}`;
+                cardEl.innerHTML = `
+                    <div class="${c.tape}"></div>
+                    <div class="card-header-box">
+                        <span class="card-stamp-badge">${c.tag}</span>
+                        <span class="card-num-badge">#${c.num}</span>
+                    </div>
+                    <div class="card-topic-title">${c.title}</div>
+                    <div class="card-message">${c.text}</div>
+                    <div class="card-footer-box">
+                        <span class="card-doodle-icon">${c.doodle}</span>
+                        <span class="card-love-sign">Forever Yours ♥</span>
+                    </div>
+                `;
+                deckContainer.appendChild(cardEl);
+
+                // 2. Gallery Spread Card
+                const gallCard = document.createElement('div');
+                gallCard.className = `gallery-card-item ${c.bg}`;
+                gallCard.innerHTML = cardEl.innerHTML;
+                gallCard.onclick = () => {
+                    activeCardIndex = index;
+                    toggleSpreadView();
+                    updateCardPositions();
+                };
+                galleryGrid.appendChild(gallCard);
+            });
+
+            updateCardPositions();
+        }
+
+        /* ================= OPTIMIZED 3D CARD POSITIONING ================= */
+        function updateCardPositions() {
+            cardsData.forEach((_, i) => {
+                const el = document.getElementById(`deck_card_${i}`);
+                if (!el) return;
+
+                if (i < activeCardIndex) {
+                    gsap.to(el, {
+                        x: -420,
+                        y: -20,
+                        rotationY: -35,
+                        rotationZ: -10,
+                        scale: 0.88,
+                        opacity: 0,
+                        duration: 0.45,
+                        ease: "power2.out"
+                    });
+                    el.classList.remove('active-shadow');
+                } else if (i === activeCardIndex) {
+                    gsap.to(el, {
+                        x: 0,
+                        y: 0,
+                        rotationX: 0,
+                        rotationY: 0,
+                        rotationZ: (i % 2 === 0 ? -1 : 1),
+                        scale: 1,
+                        opacity: 1,
+                        zIndex: 30,
+                        duration: 0.45,
+                        ease: "back.out(1.2)"
+                    });
+                    el.classList.add('active-shadow');
+                } else {
+                    const offset = i - activeCardIndex;
+                    if (offset <= 3) {
+                        gsap.to(el, {
+                            x: 0,
+                            y: offset * 6,
+                            rotationY: 0,
+                            rotationZ: (offset % 2 === 0 ? 1 : -1),
+                            scale: 1 - offset * 0.03,
+                            opacity: 1 - offset * 0.2,
+                            zIndex: 30 - offset,
+                            duration: 0.45,
+                            ease: "power2.out"
+                        });
+                        el.classList.remove('active-shadow');
+                    } else {
+                        el.style.opacity = '0';
+                    }
+                }
+            });
+
+            document.getElementById('cardCounterText').innerText = `${activeCardIndex + 1} / ${totalCardsCount}`;
+
+            const nextBtn = document.getElementById('nextCardBtn');
+            const celBtn = document.getElementById('celebrateBtn');
+            if (activeCardIndex === totalCardsCount - 1) {
+                nextBtn.style.display = 'none';
+                celBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                celBtn.style.display = 'none';
+            }
+        }
+
+        function nextCard() {
+            if (activeCardIndex < totalCardsCount - 1) {
+                playPaperShuffleSound();
+                activeCardIndex++;
+                updateCardPositions();
+            }
+        }
+
+        function prevCard() {
+            if (activeCardIndex > 0) {
+                playPaperShuffleSound();
+                activeCardIndex--;
+                updateCardPositions();
+            }
+        }
+
+        /* ================= TOUCH / MOUSE SWIPE ================= */
+        let startX = 0, startY = 0;
+        window.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.top-nav') || e.target.closest('.deck-dock') || isSpreadActive || !isBoxOpened) return;
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+
+        window.addEventListener('touchend', (e) => {
+            if (isSpreadActive || startX === 0 || !isBoxOpened) return;
+            const deltaX = e.changedTouches[0].clientX - startX;
+            const deltaY = e.changedTouches[0].clientY - startY;
+            if (Math.abs(deltaX) > 35 && Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX < 0) nextCard();
+                else prevCard();
+            }
+            startX = 0;
+        }, { passive: true });
+
+        /* ================= SPREAD VIEW TOGGLE ================= */
+        function toggleSpreadView() {
+            isSpreadActive = !isSpreadActive;
+            const btn = document.getElementById('toggleSpreadBtn');
+            if (isSpreadActive) {
+                galleryGrid.classList.add('active');
+                btn.innerText = '🃏 Stack View';
+            } else {
+                galleryGrid.classList.remove('active');
+                btn.innerText = '🎴 View All 19';
+            }
+        }
+
+        /* ================= SMOOTH RAF-DAMPED PARALLAX ================= */
+        let targetRotX = 0, targetRotY = 0;
+        let currentRotX = 0, currentRotY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            if (isSpreadActive || !isBoxOpened) return;
+            targetRotX = (e.clientY / window.innerHeight - 0.5) * -10;
+            targetRotY = (e.clientX / window.innerWidth - 0.5) * 10;
+        });
+
+        /* ================= AUDIO ENGINE ================= */
+        let audioCtx = null;
+        let isMusicPlaying = true;
+        let musicTimer = null;
+
+        const chords = [
+            [261.63, 329.63, 392.00, 523.25], // C
+            [220.00, 261.63, 329.63, 440.00], // Am
+            [174.61, 220.00, 261.63, 349.23], // F
+            [196.00, 246.94, 293.66, 392.00]  // G
+        ];
+        let chordIdx = 0;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playRomanticChords() {
+            if (!audioCtx || !isMusicPlaying) return;
+            const chord = chords[chordIdx];
+            chord.forEach((freq, i) => {
+                setTimeout(() => {
+                    if (!audioCtx || !isMusicPlaying) return;
+                    try {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                        gain.gain.setValueAtTime(0.045, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.4);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 2.4);
+                    } catch(e) {}
+                }, i * 180);
+            });
+
+            chordIdx = (chordIdx + 1) % chords.length;
+            musicTimer = setTimeout(playRomanticChords, 2900);
+        }
+
+        function toggleMusic() {
+            initAudio();
+            isMusicPlaying = !isMusicPlaying;
+            document.getElementById('soundBtn').innerText = isMusicPlaying ? '🎵 Music: On' : '🔇 Music: Off';
+            if (isMusicPlaying) playRomanticChords();
+            else clearTimeout(musicTimer);
+        }
+
+        function playPaperShuffleSound() {
+            initAudio();
+            if (!audioCtx) return;
+            const bufSize = audioCtx.sampleRate * 0.12;
+            const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buf;
+
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(2400, audioCtx.currentTime);
+            filter.Q.setValueAtTime(2.0, audioCtx.currentTime);
+
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+            noise.start();
+        }
+
+        /* ================= HEART CELEBRATION FINALE ================= */
+        function triggerHeartCelebration() {
+            initAudio();
+            [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+                setTimeout(() => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.0);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 1.0);
+                }, i * 90);
+            });
+
+            for (let i = 0; i < 90; i++) createHeartParticle();
+        }
+
+        function createHeartParticle() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '♥';
+            heart.style.position = 'fixed';
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.top = (window.innerHeight + 15) + 'px';
+            heart.style.fontSize = (15 + Math.random() * 22) + 'px';
+            heart.style.color = ['#ff4081', '#ffd700', '#ff80ab', '#ff1744'][Math.floor(Math.random() * 4)];
+            heart.style.zIndex = '999';
+            heart.style.pointerEvents = 'none';
+            document.body.appendChild(heart);
+
+            gsap.to(heart, {
+                y: -window.innerHeight - 80,
+                x: (Math.random() - 0.5) * 200,
+                rotation: (Math.random() - 0.5) * 160,
+                opacity: 0,
+                duration: 2.5 + Math.random() * 2,
+                ease: "power1.out",
+                onComplete: () => heart.remove()
+            });
+        }
+
+        /* ================= HIGH PERFORMANCE BOKEH CANVAS ================= */
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        for (let i = 0; i < 35; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 2.5 + 1,
+                vy: -Math.random() * 0.35 - 0.15,
+                alpha: Math.random() * 0.45 + 0.15
+            });
+        }
+
+        function renderFrame() {
+            if (isBoxOpened && !isSpreadActive) {
+                currentRotX += (targetRotX - currentRotX) * 0.08;
+                currentRotY += (targetRotY - currentRotY) * 0.08;
+                deckContainer.style.transform = `rotateX(${currentRotX}deg) rotateY(${currentRotY}deg)`;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ff80ab';
+            particles.forEach(p => {
+                ctx.globalAlpha = p.alpha;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+
+                p.y += p.vy;
+                if (p.y < 0) {
+                    p.y = canvas.height;
+                    p.x = Math.random() * canvas.width;
+                }
+            });
+
+            requestAnimationFrame(renderFrame);
+        }
+        renderFrame();
+    </script>
+</body>
+</html>

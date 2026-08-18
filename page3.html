@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chapter 3: Midnight Waterfront & Starlit Lake ✨🌊</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+
+    <!-- Three.js & GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #01040d;
+            font-family: 'Montserrat', sans-serif;
+            color: #fff;
+        }
+
+        #webgl-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            z-index: 1;
+        }
+
+        /* Top Header */
+        .top-nav {
+            position: fixed;
+            top: 16px;
+            left: 0;
+            width: 100%;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        .nav-btn {
+            pointer-events: auto;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 9px 16px;
+            border-radius: 30px;
+            color: #fff;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+            transform: translateY(-2px);
+        }
+
+        /* Navigation Hint */
+        .controls-hint {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            letter-spacing: 0.8px;
+            color: #b3e5fc;
+            z-index: 40;
+            pointer-events: none;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        /* Virtual Walk Joystick (Bottom-Left) */
+        #joystick-container {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 110px;
+            height: 110px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: 50%;
+            z-index: 60;
+            touch-action: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #joystick-knob {
+            width: 46px;
+            height: 46px;
+            background: radial-gradient(circle at 35% 35%, #80d8ff, #00b0ff);
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0, 176, 255, 0.7);
+            position: absolute;
+            pointer-events: none;
+            transform: translate(0px, 0px);
+            transition: transform 0.03s ease-out;
+        }
+
+        .joystick-label {
+            position: absolute;
+            top: -24px;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.7);
+            pointer-events: none;
+        }
+
+        /* Bottom Action Dock */
+        .interaction-dock {
+            position: fixed;
+            bottom: 30px;
+            left: 55%;
+            transform: translateX(-50%);
+            background: rgba(6, 14, 28, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 24px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 50;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 25px rgba(0, 229, 255, 0.3);
+            pointer-events: auto;
+        }
+
+        .dock-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #e1f5fe;
+            white-space: nowrap;
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background: #00e5ff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00e5ff;
+            animation: pulseGlow 1.5s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.5; }
+        }
+
+        .dock-btn {
+            background: linear-gradient(135deg, #ffd54f, #ff9800);
+            color: #211003;
+            border: none;
+            padding: 10px 22px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .dock-btn:hover {
+            transform: scale(1.06);
+            box-shadow: 0 10px 25px rgba(255, 152, 0, 0.6);
+        }
+
+        /* ================= WISH LANTERN WRITING MODAL ================= */
+        .wish-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 15, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .wish-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .wish-card {
+            background: radial-gradient(circle at center, #1b263b 0%, #0d1b2a 100%);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            width: 90%;
+            max-width: 440px;
+            padding: 35px 30px;
+            border-radius: 26px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 45px rgba(255, 215, 0, 0.3);
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .wish-modal.active .wish-card {
+            transform: scale(1);
+        }
+
+        .wish-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.9rem;
+            color: #ffe885;
+            margin-bottom: 8px;
+        }
+
+        .wish-card p {
+            font-size: 0.88rem;
+            color: #b3c5d7;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .wish-textarea {
+            width: 100%;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1.5px solid rgba(255, 215, 0, 0.4);
+            border-radius: 16px;
+            padding: 16px;
+            color: #fff;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.35rem;
+            outline: none;
+            resize: none;
+            margin-bottom: 22px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.6);
+        }
+
+        .wish-textarea:focus {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .wish-submit-btn {
+            background: linear-gradient(135deg, #ffd54f, #ff9800);
+            color: #1a0f00;
+            border: none;
+            padding: 14px 34px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 152, 0, 0.5);
+            transition: transform 0.2s;
+        }
+
+        .wish-submit-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* ================= GIFT REVEAL MODAL (BLENDED TRANSITION TO PAGE 4) ================= */
+        .gift-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 15, 0.94);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 300;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .gift-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .gift-box-card {
+            background: radial-gradient(circle at center, #2e1022 0%, #15050f 100%);
+            border: 2px solid #ff80ab;
+            width: 90%;
+            max-width: 440px;
+            padding: 40px 30px;
+            border-radius: 28px;
+            text-align: center;
+            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.95), 0 0 45px rgba(255, 64, 129, 0.45);
+            animation: giftFloat 3.5s infinite ease-in-out alternate;
+        }
+
+        @keyframes giftFloat {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-10px); }
+        }
+
+        .gift-icon-glow {
+            font-size: 4.5rem;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 0 25px #ff4081);
+            animation: giftPulse 1.8s infinite alternate ease-in-out;
+        }
+
+        @keyframes giftPulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.12); filter: drop-shadow(0 0 40px #ff4081); }
+        }
+
+        .gift-box-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.1rem;
+            color: #ffe6f0;
+            margin-bottom: 10px;
+        }
+
+        .gift-box-card p {
+            font-size: 0.92rem;
+            color: #d1badb;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        .open-final-gift-btn {
+            background: linear-gradient(135deg, #ff4081, #d500f9);
+            color: #fff;
+            text-decoration: none;
+            padding: 16px 38px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(213, 0, 249, 0.5);
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .open-final-gift-btn:hover {
+            transform: scale(1.06);
+            box-shadow: 0 15px 40px rgba(213, 0, 249, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            #joystick-container { bottom: 20px; left: 15px; width: 90px; height: 90px; }
+            #joystick-knob { width: 38px; height: 38px; }
+            .interaction-dock { left: 60%; bottom: 20px; padding: 10px 18px; gap: 10px; }
+            .dock-status { font-size: 0.78rem; }
+            .controls-hint { font-size: 0.68rem; padding: 4px 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 3D WebGL Canvas -->
+    <div id="webgl-container"></div>
+
+    <!-- Top UI Header -->
+    <div class="top-nav">
+        <button class="nav-btn" onclick="window.location.href='page2.html'">🕯️ Back to Memory Lane</button>
+        <button class="nav-btn" id="soundBtn" onclick="toggleMusic()">🎵 Music: On</button>
+    </div>
+
+    <!-- FPP Controls Hint -->
+    <div class="controls-hint" id="camHint">🕹️ Walk on the pier | Tap the Sky Lantern to make a Wish | Tap the Cake</div>
+
+    <!-- Walk Joystick (Bottom-Left) -->
+    <div id="joystick-container">
+        <span class="joystick-label">Walk</span>
+        <div id="joystick-knob"></div>
+    </div>
+
+    <!-- Bottom Action Dock -->
+    <div class="interaction-dock" id="bottomDock">
+        <div class="dock-status">
+            <div class="pulse-dot" id="statusDot"></div>
+            <span id="statusMessage">Release the Paper Sky Lantern 🏮</span>
+        </div>
+        <button class="dock-btn" id="wishBtn" onclick="openWishModal()">✍️ Write Wish</button>
+        <button class="dock-btn" id="blowBtn" style="display: none;" onclick="extinguishTableCandle()">💨 Blow Cake Candle</button>
+    </div>
+
+    <!-- WISH WRITING MODAL -->
+    <div class="wish-modal" id="wishModal">
+        <div class="wish-card">
+            <h2>🏮 Paper Sky Lantern</h2>
+            <p>Write your secret birthday wish. It will be written onto the paper lantern and released to the stars!</p>
+            <textarea class="wish-textarea" id="wishInput" placeholder="Write your secret birthday wish here... ✨"></textarea>
+            <button class="wish-submit-btn" onclick="releaseSkyLantern()">Release into the Stars ✨</button>
+        </div>
+    </div>
+
+    <!-- GIFT REVEAL MODAL (BLENDED TRANSITION TO PAGE 4) -->
+    <div class="gift-modal" id="giftModal">
+        <div class="gift-box-card">
+            <div class="gift-icon-glow">🎁</div>
+            <h2>Your Birthday Gift Awaits</h2>
+            <p>You wrote your wish, illuminated the midnight lake, and blew out your candle. Now, the final secret is unlocked...</p>
+            <a href="page4.html" class="open-final-gift-btn">Open My Birthday Gift ➜</a>
+        </div>
+    </div>
+
+    <!-- ================= STAGED IMAGES FOR SECURE BUILDER V13 ================= -->
+    <!-- Drop your Google Skyline Image as 'city_skyline.jpg' into Secure Builder to override the procedural city! -->
+    <div style="display: none;" aria-hidden="true">
+        <img id="raw_city_bg" src="city_skyline.jpg" onerror="this.dataset.loaded='false';" onload="this.dataset.loaded='true';">
+        <img id="raw_date_pic" src="pic7.jpg">
+    </div>
+
+    <!-- ================= THREE.JS 3D SCENE & SHADER LOGIC ================= -->
+    <script>
+        /* ---------------- Global Variables & Configuration ---------------- */
+        let scene, camera, renderer;
+        let ambientLight, moonLight;
+        let waterMesh, waterMaterial;
+        let wishLanternGroup, lanternPaperMesh, lanternLight, isLanternReleased = false;
+        let tableCandleLight, tableFlameMesh, goldenGiftBox;
+        let fireflies = [], shootingStars = [], cityLights = [];
+        let isCandleExtinguished = false;
+        let clock = new THREE.Clock();
+
+        const EYE_HEIGHT = 1.75;
+        const playerPos = new THREE.Vector3(0, EYE_HEIGHT, 8.5); // Pier start position
+        let cameraYaw = 0;
+        let cameraPitch = -0.05;
+        let targetYaw = 0;
+        let targetPitch = -0.05;
+
+        const moveVector = { x: 0, z: 0 };
+        const keyState = {};
+
+        // Audio synthesizer (night ambient + gentle piano synth)
+        let audioCtx = null;
+        let isMusicPlaying = true;
+        let musicTimer = null;
+
+        /* ---------------- Audio Engine ---------------- */
+        const chords = [
+            [261.63, 329.63, 392.00, 523.25], // Cmaj
+            [220.00, 261.63, 329.63, 440.00], // Am
+            [174.61, 220.00, 261.63, 349.23], // F
+            [196.00, 246.94, 293.66, 392.00]  // G
+        ];
+        let chordIdx = 0;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playLakeMelody() {
+            if (!audioCtx || !isMusicPlaying) return;
+            const currentChord = chords[chordIdx];
+            currentChord.forEach((freq, i) => {
+                setTimeout(() => {
+                    if (!audioCtx || !isMusicPlaying) return;
+                    try {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.5);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 2.5);
+                    } catch(e) {}
+                }, i * 220);
+            });
+
+            chordIdx = (chordIdx + 1) % chords.length;
+            musicTimer = setTimeout(playLakeMelody, 3200);
+        }
+
+        function toggleMusic() {
+            initAudio();
+            isMusicPlaying = !isMusicPlaying;
+            document.getElementById('soundBtn').innerText = isMusicPlaying ? '🎵 Music: On' : '🔇 Music: Off';
+            if (isMusicPlaying) playLakeMelody();
+            else clearTimeout(musicTimer);
+        }
+
+        function playChime() {
+            initAudio();
+            if (!audioCtx) return;
+            [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                setTimeout(() => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.0);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 1.0);
+                }, i * 90);
+            });
+        }
+
+        /* ---------------- Dynamic Rice Paper Lantern Texture ---------------- */
+        function createLanternPaperTexture(text = "Make a Wish ✨") {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            // Warm Rice Paper base with subtle fiber texture
+            const grad = ctx.createLinearGradient(0, 0, 0, 512);
+            grad.addColorStop(0, '#fff4cc');
+            grad.addColorStop(0.5, '#ffe082');
+            grad.addColorStop(1, '#ffb300');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 512, 512);
+
+            // Horizontal bamboo ribbing lines
+            ctx.strokeStyle = 'rgba(180, 110, 20, 0.35)';
+            ctx.lineWidth = 3;
+            for (let y = 30; y < 512; y += 45) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(512, y);
+                ctx.stroke();
+            }
+
+            // Write the wish message directly on the paper in romantic script
+            ctx.fillStyle = '#b71c1c';
+            ctx.font = 'bold 36px "Dancing Script", cursive';
+            ctx.textAlign = 'center';
+
+            const lines = text.split('\n');
+            const startY = 220 - (lines.length - 1) * 20;
+            lines.forEach((line, idx) => {
+                ctx.fillText(line, 256, startY + idx * 45);
+            });
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        /* ---------------- Scene Initialization ---------------- */
+        function initScene() {
+            const container = document.getElementById('webgl-container');
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x020714);
+            scene.fog = new THREE.FogExp2(0x020714, 0.015);
+
+            camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 250);
+            camera.rotation.order = 'YXZ';
+            camera.position.copy(playerPos);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.25;
+            container.appendChild(renderer.domElement);
+
+            buildMoonAndStars();
+            buildCitySkylinePanorama();
+            buildShimmeringWater();
+            buildDetailedPierAndPergola();
+            buildDetailedDateTable();
+            buildAuthenticPaperSkyLantern();
+            buildFirefliesAndLotus();
+            setupFPPControls();
+
+            window.addEventListener('resize', onWindowResize);
+            document.body.addEventListener('click', () => { initAudio(); playLakeMelody(); }, { once: true });
+        }
+
+        /* ---------------- Giant Moon & Starry Night ---------------- */
+        function buildMoonAndStars() {
+            // Giant Moon
+            const moonGeo = new THREE.CircleGeometry(5.2, 48);
+            const moonMat = new THREE.MeshBasicMaterial({ color: 0xfffae0 });
+            const moon = new THREE.Mesh(moonGeo, moonMat);
+            moon.position.set(18, 28, -65);
+            scene.add(moon);
+
+            // Radiant Halo
+            const haloGeo = new THREE.CircleGeometry(9.0, 48);
+            const haloMat = new THREE.MeshBasicMaterial({ color: 0xfffae0, transparent: true, opacity: 0.18 });
+            const halo = new THREE.Mesh(haloGeo, haloMat);
+            halo.position.set(18, 28, -65.2);
+            scene.add(halo);
+
+            // Direct Moonlight casting reflections on water
+            moonLight = new THREE.DirectionalLight(0xd4e9ff, 1.4);
+            moonLight.position.set(18, 35, -45);
+            moonLight.castShadow = true;
+            scene.add(moonLight);
+
+            ambientLight = new THREE.AmbientLight(0x0a1628, 1.4);
+            scene.add(ambientLight);
+
+            // 1500+ Stars
+            const starGeo = new THREE.BufferGeometry();
+            const starCoords = [];
+            for (let i = 0; i < 1500; i++) {
+                starCoords.push(
+                    (Math.random() - 0.5) * 200,
+                    8 + Math.random() * 70,
+                    -10 - Math.random() * 100
+                );
+            }
+            starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starCoords, 3));
+            const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.4, transparent: true, opacity: 0.9 }));
+            scene.add(stars);
+
+            // 3 Shooting Stars
+            for (let s = 0; s < 3; s++) {
+                const sStar = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.02, 0.08, 3.5, 8),
+                    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.8 })
+                );
+                sStar.rotation.z = Math.PI / 4;
+                sStar.position.set(-40 + s * 30, 32 + s * 5, -50);
+                shootingStars.push(sStar);
+                scene.add(sStar);
+            }
+        }
+
+        /* ---------------- City Skyline Panorama ---------------- */
+        function buildCitySkylinePanorama() {
+            // Check if user provided 'city_skyline.jpg' via Secure Builder V13
+            const imgEl = document.getElementById('raw_city_bg');
+            if (imgEl && imgEl.src && !imgEl.src.includes('city_skyline.jpg') && imgEl.src.startsWith('data:image')) {
+                const tex = new THREE.TextureLoader().load(imgEl.src);
+                const bgMesh = new THREE.Mesh(
+                    new THREE.PlaneGeometry(120, 35),
+                    new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide })
+                );
+                bgMesh.position.set(0, 12, -70);
+                scene.add(bgMesh);
+                return;
+            }
+
+            // High-detail procedural Skyline with Illuminated Windows & Suspension Bridge Lights
+            const bldgMat = new THREE.MeshBasicMaterial({ color: 0x030a14 });
+            const windowColors = [0xffd54f, 0x80d8ff, 0xff80ab, 0xffffff];
+
+            for (let x = -80; x <= 80; x += 5.5) {
+                const h = 14 + Math.random() * 22;
+                const w = 4.2 + Math.random() * 3.0;
+                const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, 4), bldgMat);
+                b.position.set(x + (Math.random() - 0.5) * 1.5, h / 2 - 2, -68);
+                scene.add(b);
+
+                // Sparkling window grid
+                for (let wy = 2; wy < h - 2; wy += 2.0) {
+                    for (let wx = -w / 2.6; wx < w / 2.6; wx += 1.1) {
+                        if (Math.random() > 0.4) {
+                            const win = new THREE.Mesh(
+                                new THREE.PlaneGeometry(0.35, 0.45),
+                                new THREE.MeshBasicMaterial({
+                                    color: windowColors[Math.floor(Math.random() * windowColors.length)],
+                                    transparent: true,
+                                    opacity: 0.8
+                                })
+                            );
+                            win.position.set(x + wx, wy - 2, -65.8);
+                            cityLights.push(win);
+                            scene.add(win);
+                        }
+                    }
+                }
+            }
+
+            // Waterfront Bridge Suspension Golden Lights String
+            for (let bx = -70; bx <= 70; bx += 2.5) {
+                const by = 3.5 + Math.sin((bx / 70) * Math.PI) * 2.5;
+                const bLight = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.09, 8, 8),
+                    new THREE.MeshBasicMaterial({ color: 0xffb300 })
+                );
+                bLight.position.set(bx, by, -64);
+                scene.add(bLight);
+            }
+        }
+
+        /* ---------------- Realistic Sparkling Shimmer Water ---------------- */
+        function buildShimmeringWater() {
+            const waterGeo = new THREE.PlaneGeometry(160, 160, 64, 64);
+            waterMaterial = new THREE.MeshStandardMaterial({
+                color: 0x021024,
+                roughness: 0.1,
+                metalness: 0.9,
+                flatShading: true
+            });
+
+            waterMesh = new THREE.Mesh(waterGeo, waterMaterial);
+            waterMesh.rotation.x = -Math.PI / 2;
+            waterMesh.position.y = 0;
+            waterMesh.receiveShadow = true;
+            scene.add(waterMesh);
+        }
+
+        /* ---------------- Detailed Pier, Pergola Canopy & Fairy Lights ---------------- */
+        function buildDetailedPierAndPergola() {
+            // Pier Decking with individual wooden planks
+            const pierDeck = new THREE.Mesh(
+                new THREE.BoxGeometry(5.6, 0.35, 24),
+                new THREE.MeshStandardMaterial({ color: 0x2b1b12, roughness: 0.6 })
+            );
+            pierDeck.position.set(0, 0.35, 2);
+            pierDeck.receiveShadow = true;
+            scene.add(pierDeck);
+
+            // Pergola Canopy Frame over the dining area
+            const woodMat = new THREE.MeshStandardMaterial({ color: 0x1f120a, roughness: 0.5 });
+            const posts = [
+                [-2.6, 1.8, 1.0], [2.6, 1.8, 1.0],
+                [-2.6, 1.8, 6.5], [2.6, 1.8, 6.5]
+            ];
+
+            posts.forEach(p => {
+                const post = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3.6, 0.2), woodMat);
+                post.position.set(p[0], p[1], p[2]);
+                scene.add(post);
+            });
+
+            // Cross Beams
+            const beam1 = new THREE.Mesh(new THREE.BoxGeometry(5.6, 0.15, 0.2), woodMat);
+            beam1.position.set(0, 3.6, 1.0);
+            scene.add(beam1);
+
+            const beam2 = new THREE.Mesh(new THREE.BoxGeometry(5.6, 0.15, 0.2), woodMat);
+            beam2.position.set(0, 3.6, 6.5);
+            scene.add(beam2);
+
+            // Dangling Fairy Lights & Edison Bulbs from Pergola
+            for (let x = -2.2; x <= 2.2; x += 0.8) {
+                const bulb = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.08, 12, 12),
+                    new THREE.MeshStandardMaterial({ color: 0xffeaad, emissive: 0xffaa33, emissiveIntensity: 1.8 })
+                );
+                bulb.position.set(x, 3.2 + Math.sin(x * 2) * 0.15, 3.8);
+                scene.add(bulb);
+            }
+
+            // Warm Pergola Lantern Light
+            const pergolaLight = new THREE.PointLight(0xffaa33, 2.2, 10, 1.5);
+            pergolaLight.position.set(0, 3.2, 3.8);
+            scene.add(pergolaLight);
+        }
+
+        /* ---------------- Detailed Date Table & Cake ---------------- */
+        function buildDetailedDateTable() {
+            const tableGroup = new THREE.Group();
+            tableGroup.position.set(0, 0.55, 3.8);
+
+            // Table Top & Cloth
+            const tableTop = new THREE.Mesh(
+                new THREE.CylinderGeometry(1.4, 1.4, 0.08, 32),
+                new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 })
+            );
+            tableTop.position.y = 0.72;
+            tableGroup.add(tableTop);
+
+            const cloth = new THREE.Mesh(
+                new THREE.CylinderGeometry(1.42, 1.65, 0.55, 32, 1, true),
+                new THREE.MeshStandardMaterial({ color: 0x4a0a22, roughness: 0.7, side: THREE.DoubleSide })
+            );
+            cloth.position.y = 0.45;
+            tableGroup.add(cloth);
+
+            // Birthday Cake on Table
+            const cake = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.48, 0.48, 0.24, 32),
+                new THREE.MeshStandardMaterial({ color: 0xff85a2, roughness: 0.35 })
+            );
+            cake.position.set(0, 0.92, 0);
+            cake.userData = { isCake: true };
+            tableGroup.add(cake);
+
+            // Candle
+            const candle = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.025, 0.025, 0.22, 16),
+                new THREE.MeshStandardMaterial({ color: 0xffffff })
+            );
+            candle.position.set(0, 1.15, 0);
+            tableGroup.add(candle);
+
+            // Flame
+            const flameGeo = new THREE.ConeGeometry(0.035, 0.10, 12);
+            flameGeo.translate(0, 0.05, 0);
+            tableFlameMesh = new THREE.Mesh(flameGeo, new THREE.MeshBasicMaterial({ color: 0xffa500 }));
+            tableFlameMesh.position.set(0, 1.27, 0);
+            tableGroup.add(tableFlameMesh);
+
+            tableCandleLight = new THREE.PointLight(0xffa834, 2.0, 6, 1.8);
+            tableCandleLight.position.set(0, 1.32, 0);
+            tableGroup.add(tableCandleLight);
+
+            // Champagne Bottle & Two Glasses
+            const bottle = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.04, 0.06, 0.32, 16),
+                new THREE.MeshStandardMaterial({ color: 0x1b4332, roughness: 0.1, metalness: 0.5 })
+            );
+            bottle.position.set(0.45, 0.92, -0.3);
+            tableGroup.add(bottle);
+
+            // 3D Golden Gift Box (Appears on candle blow!)
+            goldenGiftBox = new THREE.Mesh(
+                new THREE.BoxGeometry(0.4, 0.35, 0.4),
+                new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.85, roughness: 0.2 })
+            );
+            goldenGiftBox.position.set(0, 0.95, 0.4);
+            goldenGiftBox.scale.set(0, 0, 0); // Initially hidden
+            goldenGiftBox.userData = { isGiftBox: true };
+            tableGroup.add(goldenGiftBox);
+
+            scene.add(tableGroup);
+        }
+
+        /* ---------------- Authentic Rice Paper Sky Lantern (Khom Loi) ---------------- */
+        function buildAuthenticPaperSkyLantern() {
+            wishLanternGroup = new THREE.Group();
+            wishLanternGroup.position.set(0, 1.1, -7.5); // Pier edge
+
+            // 1. Tapered Translucent Paper Cylinder
+            const paperGeo = new THREE.CylinderGeometry(0.42, 0.32, 0.85, 32, 8, true);
+            const paperMat = new THREE.MeshStandardMaterial({
+                map: createLanternPaperTexture("Tap to Write Wish ✨"),
+                transparent: true,
+                opacity: 0.92,
+                roughness: 0.4,
+                side: THREE.DoubleSide
+            });
+            lanternPaperMesh = new THREE.Mesh(paperGeo, paperMat);
+            lanternPaperMesh.userData = { isWishLantern: true };
+            wishLanternGroup.add(lanternPaperMesh);
+
+            // 2. Bamboo Structural Rings
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0x5c3d18 });
+            [-0.38, 0, 0.38].forEach(yPos => {
+                const r = 0.32 + (yPos + 0.4) * 0.12;
+                const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.012, 8, 32), ringMat);
+                ring.rotation.x = Math.PI / 2;
+                ring.position.y = yPos;
+                wishLanternGroup.add(ring);
+            });
+
+            // 3. Bamboo Base Ring & Wire Cross
+            const baseRing = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.018, 8, 32), ringMat);
+            baseRing.rotation.x = Math.PI / 2;
+            baseRing.position.y = -0.42;
+            wishLanternGroup.add(baseRing);
+
+            // 4. Central Wax Fuel Core & Volumetric Inner Fire Glow
+            const fuelWax = new THREE.Mesh(
+                new THREE.BoxGeometry(0.08, 0.04, 0.08),
+                new THREE.MeshStandardMaterial({ color: 0xffffff })
+            );
+            fuelWax.position.y = -0.38;
+            wishLanternGroup.add(fuelWax);
+
+            const innerFlame = new THREE.Mesh(
+                new THREE.SphereGeometry(0.05, 12, 12),
+                new THREE.MeshBasicMaterial({ color: 0xffeb3b })
+            );
+            innerFlame.position.y = -0.34;
+            wishLanternGroup.add(innerFlame);
+
+            // Inner Diffuse Point Light
+            lanternLight = new THREE.PointLight(0xffa000, 2.5, 7, 1.8);
+            lanternLight.position.y = -0.1;
+            wishLanternGroup.add(lanternLight);
+
+            scene.add(wishLanternGroup);
+        }
+
+        /* ---------------- Fireflies & Floating Water Lotus Candles ---------------- */
+        function buildFirefliesAndLotus() {
+            // Floating Golden Fireflies
+            const fireflyGeo = new THREE.SphereGeometry(0.03, 8, 8);
+            const fireflyMat = new THREE.MeshBasicMaterial({ color: 0xccff00 });
+
+            for (let i = 0; i < 35; i++) {
+                const fly = new THREE.Mesh(fireflyGeo, fireflyMat);
+                const x = (Math.random() - 0.5) * 14;
+                const y = 0.8 + Math.random() * 2.8;
+                const z = -6 + (Math.random() - 0.5) * 16;
+                fly.position.set(x, y, z);
+                fly.userData = {
+                    baseX: x, baseY: y, baseZ: z,
+                    speed: 0.8 + Math.random() * 0.8,
+                    offset: Math.random() * Math.PI * 2
+                };
+                fireflies.push(fly);
+                scene.add(fly);
+            }
+        }
+
+        /* ---------------- FPP Controls Engine ---------------- */
+        function setupFPPControls() {
+            const joystickContainer = document.getElementById('joystick-container');
+            const joystickKnob = document.getElementById('joystick-knob');
+            const maxRadius = 38;
+
+            let joystickTouchId = null;
+            let lookTouchId = null;
+            let startJoystickX = 0, startJoystickY = 0;
+            let lastLookX = 0, lastLookY = 0;
+            let isMouseDown = false;
+            let lastMouseX = 0, lastMouseY = 0;
+
+            const raycaster = new THREE.Raycaster();
+            const tapMouse = new THREE.Vector2();
+
+            window.addEventListener('touchstart', (e) => {
+                for (let i = 0; i < e.changedTouches.length; i++) {
+                    const touch = e.changedTouches[i];
+                    const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+
+                    if (targetEl && (targetEl.closest('.top-nav') || targetEl.closest('.interaction-dock') || targetEl.closest('.wish-modal') || targetEl.closest('.gift-modal'))) continue;
+
+                    const jRect = joystickContainer.getBoundingClientRect();
+                    const distToJ = Math.hypot(touch.clientX - (jRect.left + jRect.width / 2), touch.clientY - (jRect.top + jRect.height / 2));
+
+                    if (distToJ <= 70 && joystickTouchId === null) {
+                        joystickTouchId = touch.identifier;
+                        startJoystickX = jRect.left + jRect.width / 2;
+                        startJoystickY = jRect.top + jRect.height / 2;
+                        handleJoystick(touch.clientX, touch.clientY);
+                    } else if (lookTouchId === null) {
+                        lookTouchId = touch.identifier;
+                        lastLookX = touch.clientX;
+                        lastLookY = touch.clientY;
+                        checkTap(touch.clientX, touch.clientY);
+                    }
+                }
+            }, { passive: false });
+
+            window.addEventListener('touchmove', (e) => {
+                for (let i = 0; i < e.changedTouches.length; i++) {
+                    const touch = e.changedTouches[i];
+                    if (touch.identifier === joystickTouchId) {
+                        handleJoystick(touch.clientX, touch.clientY);
+                    } else if (touch.identifier === lookTouchId) {
+                        const deltaX = touch.clientX - lastLookX;
+                        const deltaY = touch.clientY - lastLookY;
+                        lastLookX = touch.clientX;
+                        lastLookY = touch.clientY;
+
+                        targetYaw -= deltaX * 0.005;
+                        targetPitch -= deltaY * 0.005;
+                        targetPitch = Math.max(-0.8, Math.min(0.8, targetPitch));
+                    }
+                }
+            }, { passive: false });
+
+            function handleTouchEnd(e) {
+                for (let i = 0; i < e.changedTouches.length; i++) {
+                    const touch = e.changedTouches[i];
+                    if (touch.identifier === joystickTouchId) {
+                        joystickTouchId = null;
+                        joystickKnob.style.transform = 'translate(0px, 0px)';
+                        moveVector.x = 0; moveVector.z = 0;
+                    } else if (touch.identifier === lookTouchId) {
+                        lookTouchId = null;
+                    }
+                }
+            }
+
+            window.addEventListener('touchend', handleTouchEnd);
+            window.addEventListener('touchcancel', handleTouchEnd);
+
+            function handleJoystick(clientX, clientY) {
+                const deltaX = clientX - startJoystickX;
+                const deltaY = clientY - startJoystickY;
+                const dist = Math.min(Math.hypot(deltaX, deltaY), maxRadius);
+                const angle = Math.atan2(deltaY, deltaX);
+
+                const knobX = Math.cos(angle) * dist;
+                const knobY = Math.sin(angle) * dist;
+
+                joystickKnob.style.transform = `translate(${knobX}px, ${knobY}px)`;
+                moveVector.x = knobX / maxRadius;
+                moveVector.z = knobY / maxRadius;
+            }
+
+            // Mouse
+            window.addEventListener('mousedown', (e) => {
+                if (e.target.closest('.top-nav') || e.target.closest('.interaction-dock') || e.target.closest('.wish-modal') || e.target.closest('.gift-modal')) return;
+                const jRect = joystickContainer.getBoundingClientRect();
+                if (Math.hypot(e.clientX - (jRect.left + jRect.width/2), e.clientY - (jRect.top + jRect.height/2)) <= 65) {
+                    startJoystickX = jRect.left + jRect.width / 2;
+                    startJoystickY = jRect.top + jRect.height / 2;
+                } else {
+                    isMouseDown = true;
+                    lastMouseX = e.clientX;
+                    lastMouseY = e.clientY;
+                    checkTap(e.clientX, e.clientY);
+                }
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (isMouseDown) {
+                    targetYaw -= (e.clientX - lastMouseX) * 0.004;
+                    targetPitch -= (e.clientY - lastMouseY) * 0.004;
+                    targetPitch = Math.max(-0.8, Math.min(0.8, targetPitch));
+                    lastMouseX = e.clientX;
+                    lastMouseY = e.clientY;
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                isMouseDown = false;
+                joystickKnob.style.transform = 'translate(0px, 0px)';
+                moveVector.x = 0; moveVector.z = 0;
+            });
+
+            window.addEventListener('keydown', (e) => { keyState[e.code] = true; });
+            window.addEventListener('keyup', (e) => { keyState[e.code] = false; });
+
+            function checkTap(clientX, clientY) {
+                tapMouse.x = (clientX / window.innerWidth) * 2 - 1;
+                tapMouse.y = -(clientY / window.innerHeight) * 2 + 1;
+                raycaster.setFromCamera(tapMouse, camera);
+
+                const hits = raycaster.intersectObjects(scene.children, true);
+                if (hits.length > 0) {
+                    for (let hit of hits) {
+                        if (hit.object.userData && hit.object.userData.isWishLantern) {
+                            openWishModal();
+                            return;
+                        }
+                        if (hit.object.userData && hit.object.userData.isCake) {
+                            extinguishTableCandle();
+                            return;
+                        }
+                        if (hit.object.userData && hit.object.userData.isGiftBox) {
+                            document.getElementById('giftModal').classList.add('active');
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        /* ---------------- Player Movement ---------------- */
+        function updatePlayer(delta) {
+            let forward = 0;
+            let strafe = 0;
+
+            if (keyState['KeyW'] || keyState['ArrowUp']) forward += 1;
+            if (keyState['KeyS'] || keyState['ArrowDown']) forward -= 1;
+            if (keyState['KeyA'] || keyState['ArrowLeft']) strafe -= 1;
+            if (keyState['KeyD'] || keyState['ArrowRight']) strafe += 1;
+
+            if (moveVector.z !== 0) forward -= moveVector.z;
+            if (moveVector.x !== 0) strafe += moveVector.x;
+
+            if (forward !== 0 || strafe !== 0) {
+                const speed = 4.5 * delta;
+                const sinYaw = Math.sin(cameraYaw);
+                const cosYaw = Math.cos(cameraYaw);
+
+                playerPos.x += (-sinYaw * forward + cosYaw * strafe) * speed;
+                playerPos.z += (-cosYaw * forward - sinYaw * strafe) * speed;
+
+                playerPos.x = THREE.MathUtils.clamp(playerPos.x, -2.2, 2.2);
+                playerPos.z = THREE.MathUtils.clamp(playerPos.z, -8.0, 11.5);
+            }
+
+            cameraYaw += (targetYaw - cameraYaw) * 0.18;
+            cameraPitch += (targetPitch - cameraPitch) * 0.18;
+
+            camera.rotation.y = cameraYaw;
+            camera.rotation.x = cameraPitch;
+            camera.rotation.z = 0;
+            camera.position.set(playerPos.x, EYE_HEIGHT, playerPos.z);
+        }
+
+        /* ---------------- Wish Lantern Writing & Release ---------------- */
+        function openWishModal() {
+            if (isLanternReleased) return;
+            document.getElementById('wishModal').classList.add('active');
+        }
+
+        function releaseSkyLantern() {
+            const wishText = document.getElementById('wishInput').value.trim() || "Forever & Always 💕";
+            document.getElementById('wishModal').classList.remove('active');
+            isLanternReleased = true;
+
+            playChime();
+
+            // Paint her exact wish onto the 3D paper lantern texture in real-time!
+            lanternPaperMesh.material.map = createLanternPaperTexture(wishText);
+            lanternPaperMesh.material.needsUpdate = true;
+
+            // Float smoothly toward the stars and moon
+            gsap.to(wishLanternGroup.position, {
+                y: 38,
+                z: -55,
+                x: 14,
+                duration: 20,
+                ease: "power1.inOut"
+            });
+
+            document.getElementById('statusDot').style.background = '#ffd700';
+            document.getElementById('statusMessage').innerHTML = `✨ Wish in the Stars! Now blow your Cake Candle! 🎂`;
+            document.getElementById('wishBtn').style.display = 'none';
+            document.getElementById('blowBtn').style.display = 'flex';
+        }
+
+        /* ---------------- Blow Candle & Reveal 3D Gift Box ---------------- */
+        function extinguishTableCandle() {
+            if (isCandleExtinguished) return;
+            isCandleExtinguished = true;
+
+            playChime();
+
+            gsap.to(tableFlameMesh.scale, { x: 0, y: 0, z: 0, duration: 0.5 });
+            gsap.to(tableCandleLight, { intensity: 0, duration: 0.8 });
+
+            // Animate 3D Golden Gift Box popping up onto the table
+            gsap.to(goldenGiftBox.scale, { x: 1, y: 1, z: 1, duration: 0.8, ease: "back.out(2)" });
+
+            document.getElementById('statusDot').style.background = '#ff4081';
+            document.getElementById('statusMessage').innerHTML = `🎁 A Special Birthday Gift has appeared on the Table!`;
+            document.getElementById('blowBtn').style.display = 'none';
+
+            setTimeout(() => {
+                document.getElementById('giftModal').classList.add('active');
+            }, 1200);
+        }
+
+        /* ---------------- Render & Physics Loop ---------------- */
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const delta = clock.getDelta();
+            const time = clock.getElapsedTime();
+
+            updatePlayer(delta);
+
+            // 1. Shimmering Sparkling Water Wave displacement
+            if (waterMesh) {
+                const pos = waterMesh.geometry.attributes.position;
+                for (let i = 0; i < pos.count; i++) {
+                    const u = pos.getX(i);
+                    const v = pos.getY(i);
+                    // High-frequency ripple wave calculation for glisten & sparkle
+                    const wave1 = Math.sin(u * 0.5 + time * 2.0) * 0.12;
+                    const wave2 = Math.cos(v * 0.6 + time * 1.6) * 0.12;
+                    const sparkle = Math.sin(u * 1.8 + v * 1.8 + time * 3.5) * 0.04;
+                    pos.setZ(i, wave1 + wave2 + sparkle);
+                }
+                pos.needsUpdate = true;
+            }
+
+            // 2. Animate Fireflies
+            fireflies.forEach(fly => {
+                fly.position.x = fly.userData.baseX + Math.sin(time * fly.userData.speed + fly.userData.offset) * 0.6;
+                fly.position.y = fly.userData.baseY + Math.cos(time * fly.userData.speed + fly.userData.offset) * 0.4;
+                fly.position.z = fly.userData.baseZ + Math.sin(time * 0.5 + fly.userData.offset) * 0.6;
+            });
+
+            // 3. Animate Shooting Stars
+            shootingStars.forEach((star, i) => {
+                star.position.x += 0.8;
+                star.position.y -= 0.5;
+                if (star.position.x > 80) {
+                    star.position.set(-60 - i * 20, 35 + i * 5, -50);
+                }
+            });
+
+            // 4. Candle & Lantern Flickers
+            if (!isCandleExtinguished && tableCandleLight) {
+                tableCandleLight.intensity = 2.0 + Math.sin(time * 15) * 0.25;
+            }
+            if (lanternLight) {
+                lanternLight.intensity = 2.4 + Math.sin(time * 12) * 0.3;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initScene();
+            animate();
+        });
+    </script>
+</body>
+</html>
