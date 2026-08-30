@@ -3,25 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chapter 4: Handcrafted Love Keepsake ✨💌</title>
+    <title>Chapter 4: Handcrafted Gem Keepsake ✨🎂💍</title>
     
     <!-- Romantic & Handwritten Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@700&family=Montserrat:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Reenie+Beanie&family=Space+Grotesk:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@600;700;900&family=Dancing+Script:wght@700&family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,400;1,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Reenie+Beanie&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 
-    <!-- GSAP for Smooth Paper Physics -->
+    <!-- GSAP for Smooth Paper Physics & Confetti Animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
     <style>
         :root {
-            --kraft: #dfc8ae;
-            --cream: #faf5ee;
-            --blush: #fceade;
-            --parchment: #f3e9dc;
-            --sage: #e3ebd9;
-            --rose-petal: #ffebee;
-            --ink-black: #2b1e1a;
+            --ink-dark: #210d1f;
+            --gold-leaf: #d4af37;
+            --gold-bright: #ffd700;
+            --rose-accent: #ff4081;
         }
 
         * {
@@ -30,19 +27,20 @@
             box-sizing: border-box;
             user-select: none;
             -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body, html {
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: radial-gradient(circle at 50% 45%, #251022 0%, #110413 70%, #050108 100%);
-            font-family: 'Montserrat', sans-serif;
+            background: radial-gradient(ellipse at 50% 30%, #2e092b 0%, #15021a 55%, #050008 100%);
+            font-family: 'Plus Jakarta Sans', sans-serif;
             color: #fff;
-            perspective: 1400px;
+            perspective: 1600px;
         }
 
-        /* Ambient Bokeh Canvas */
+        /* Ambient Bokeh Particle Canvas */
         #particleCanvas {
             position: fixed;
             inset: 0;
@@ -50,10 +48,142 @@
             z-index: 1;
         }
 
-        /* Minimalist Top Header */
+        /* ================= 1. ENTRY BUFFER & GPU BENCHMARK CURTAIN ================= */
+        .entry-curtain {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #260a28 0%, #08000c 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            transition: opacity 0.8s cubic-bezier(0.7, 0, 0.3, 1), visibility 0.8s;
+            padding: 16px;
+        }
+
+        .entry-card {
+            background: rgba(26, 8, 32, 0.95);
+            border: 1.5px solid rgba(255, 215, 0, 0.3);
+            padding: 34px 28px;
+            border-radius: 26px;
+            text-align: center;
+            max-width: 460px;
+            width: 100%;
+            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.95), 0 0 40px rgba(255, 64, 129, 0.25);
+            backdrop-filter: blur(14px);
+        }
+
+        .entry-card h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.65rem;
+            color: #fff;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            text-shadow: 0 3px 15px rgba(255, 64, 129, 0.5);
+        }
+
+        .entry-card p {
+            color: #e5cde8;
+            font-size: 0.86rem;
+            line-height: 1.55;
+            margin-bottom: 18px;
+        }
+
+        .loader-container {
+            width: 100%;
+            background: #2a0e38;
+            border-radius: 12px;
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .loader-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff4081, #ffd700);
+            border-radius: 12px;
+            transition: width 0.2s ease-out;
+        }
+
+        .loader-status {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #ff8da1;
+            margin-bottom: 8px;
+            letter-spacing: 0.4px;
+        }
+
+        .device-badge {
+            display: inline-block;
+            background: rgba(45, 14, 55, 0.85);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            padding: 4px 14px;
+            border-radius: 14px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #ffd4eb;
+            margin-bottom: 16px;
+        }
+
+        .mode-selector-group {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            background: #1c0827;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #caa7d8;
+            padding: 6px 14px;
+            border-radius: 18px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #ff4081, #d81b60);
+            color: #fff;
+            border-color: #ff8da1;
+            box-shadow: 0 0 14px rgba(255, 64, 129, 0.55);
+        }
+
+        .enter-btn {
+            background: linear-gradient(135deg, #ff4081, #e91e63);
+            color: #fff;
+            border: none;
+            padding: 12px 34px;
+            font-size: 0.94rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(233, 30, 99, 0.6);
+            transition: transform 0.25s ease, opacity 0.3s ease;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .enter-btn.ready {
+            opacity: 1;
+            pointer-events: auto;
+            animation: pulseBtn 1.8s infinite alternate;
+        }
+
+        @keyframes pulseBtn {
+            0% { transform: scale(1); box-shadow: 0 8px 25px rgba(233, 30, 99, 0.5); }
+            100% { transform: scale(1.05); box-shadow: 0 12px 35px rgba(255, 64, 129, 0.75); }
+        }
+
+        /* Minimalist Top Navigation Header */
         .top-nav {
             position: fixed;
-            top: 12px;
+            top: 14px;
             left: 0;
             width: 100%;
             padding: 0 16px;
@@ -66,46 +196,70 @@
 
         .nav-btn {
             pointer-events: auto;
-            background: rgba(35, 12, 40, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 5px 12px;
+            background: rgba(38, 12, 45, 0.85);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            padding: 6px 14px;
             border-radius: 20px;
             color: #fff;
-            font-size: 0.72rem;
-            font-weight: 600;
+            font-size: 0.74rem;
+            font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 4px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-            transition: transform 0.2s ease, background 0.2s ease;
+            gap: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
         }
 
         .nav-btn:hover {
-            background: rgba(60, 20, 70, 0.9);
+            background: rgba(65, 20, 75, 0.95);
+            border-color: rgba(255, 215, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .graphics-pill {
+            pointer-events: auto;
+            background: #240b36;
+            border: 1px solid rgba(255, 215, 0, 0.35);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #ffd700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+            transition: all 0.2s ease;
+        }
+
+        .graphics-pill:hover {
+            background: #3c1258;
             transform: translateY(-1px);
         }
 
         .mode-toggle-btn {
             pointer-events: auto;
-            background: linear-gradient(135deg, #ffd54f, #ff9800);
-            color: #211003;
+            background: linear-gradient(135deg, #ffd700, #ff8da1);
+            color: #210c1a;
             border: none;
-            padding: 5px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 0.72rem;
-            font-weight: 700;
+            font-size: 0.74rem;
+            font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 3px 10px rgba(255, 152, 0, 0.3);
+            box-shadow: 0 4px 14px rgba(255, 215, 0, 0.4);
             transition: transform 0.2s;
             display: none;
         }
 
         .mode-toggle-btn:hover {
-            transform: scale(1.04);
+            transform: scale(1.05);
         }
 
-        /* ================= INTRO STAGE: GENTLE KEEPSAKE BOX ================= */
+        /* ================= INTRO STAGE: LUXURY KEEPSAKE BOX ================= */
         .intro-box-stage {
             position: absolute;
             inset: 0;
@@ -115,6 +269,8 @@
             align-items: center;
             z-index: 50;
             transition: opacity 0.6s ease, visibility 0.6s ease;
+            padding: 0 20px;
+            text-align: center;
         }
 
         .intro-box-stage.opened {
@@ -125,24 +281,25 @@
 
         .keepsake-parcel {
             position: relative;
-            width: 270px;
-            height: 180px;
-            background: #d8baa1;
-            border-radius: 14px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.65);
+            width: 280px;
+            height: 190px;
+            background: linear-gradient(145deg, #4a1532, #29081a);
+            border-radius: 18px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.85), 0 0 35px rgba(255, 64, 129, 0.3);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             transform-style: preserve-3d;
-            transition: transform 0.3s ease;
-            border: 1px solid #caa88a;
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(255, 215, 0, 0.4);
             will-change: transform;
         }
 
         .keepsake-parcel:hover {
-            transform: scale(1.03) rotate(-1deg);
+            transform: scale(1.04) rotate(-1deg);
+            box-shadow: 0 30px 70px rgba(0,0,0,0.9), 0 0 45px rgba(255, 64, 129, 0.5);
         }
 
         .ribbon-h {
@@ -151,8 +308,9 @@
             left: 0;
             transform: translateY(-50%);
             width: 100%;
-            height: 26px;
-            background: #ff4081;
+            height: 28px;
+            background: linear-gradient(90deg, #d4af37, #fff2a8, #d4af37);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
 
         .ribbon-v {
@@ -160,60 +318,69 @@
             left: 50%;
             top: 0;
             transform: translateX(-50%);
-            width: 26px;
+            width: 28px;
             height: 100%;
-            background: #ff4081;
+            background: linear-gradient(180deg, #d4af37, #fff2a8, #d4af37);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
 
         .ribbon-bow {
             position: relative;
-            width: 48px;
-            height: 48px;
-            background: radial-gradient(circle at 35% 35%, #ff80ab, #f50057);
+            width: 52px;
+            height: 52px;
+            background: radial-gradient(circle at 35% 35%, #ffe57f, #d4af37 60%, #8c6d1f);
             border-radius: 50%;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.7);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.35rem;
+            font-size: 1.5rem;
             z-index: 10;
+            border: 1px solid #fff3b0;
         }
 
         .intro-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            color: #ffe6eb;
-            margin-top: 22px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+            font-size: 1.65rem;
+            color: #fff1f5;
+            margin-top: 24px;
+            text-shadow: 0 3px 12px rgba(0,0,0,0.8);
             text-align: center;
+            font-weight: 700;
+            width: 100%;
         }
 
         .intro-sub {
             font-family: 'Caveat', cursive;
-            font-size: 1.2rem;
-            color: #ffb6c1;
-            margin-top: 4px;
+            font-size: 1.3rem;
+            color: #ffd1dc;
+            margin-top: 6px;
+            letter-spacing: 0.5px;
+            text-align: center;       /* Fully centered text */
+            width: 90%;
+            max-width: 320px;
         }
 
         .open-box-btn {
-            margin-top: 15px;
-            background: linear-gradient(135deg, #ff4081, #f50057);
+            margin-top: 18px;
+            background: linear-gradient(135deg, #ff4081, #d4af37);
             color: #fff;
             border: none;
-            padding: 8px 22px;
+            padding: 10px 28px;
             border-radius: 25px;
-            font-size: 0.78rem;
-            font-weight: 700;
+            font-size: 0.84rem;
+            font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(245, 0, 87, 0.4);
-            transition: transform 0.2s;
+            box-shadow: 0 5px 20px rgba(255, 64, 129, 0.45);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .open-box-btn:hover {
-            transform: scale(1.04);
+            transform: scale(1.06);
+            box-shadow: 0 6px 25px rgba(255, 64, 129, 0.6);
         }
 
-        /* ================= 3D STAGE & CARDS VIEWPORT ================= */
+        /* ================= 2. 3D STAGE & CARDS VIEWPORT ================= */
         .stage-viewport {
             position: absolute;
             inset: 0;
@@ -224,7 +391,7 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.6s ease, visibility 0.6s ease;
-            padding-bottom: 45px;
+            padding: 70px 20px 75px 20px;
         }
 
         .stage-viewport.active {
@@ -232,11 +399,10 @@
             visibility: visible;
         }
 
-        /* 3D CARD DECK CONTAINER */
         .deck-container {
             position: relative;
-            width: 320px;
-            height: 440px;
+            width: 340px;
+            height: 480px;
             transform-style: preserve-3d;
             cursor: grab;
             will-change: transform;
@@ -246,73 +412,269 @@
             cursor: grabbing;
         }
 
-        /* INDIVIDUAL HANDMADE CARD */
+        /* ================= 3. INDIVIDUAL TACTILE TEXTURED GEM CARDS ================= */
         .card-item {
             position: absolute;
             inset: 0;
-            border-radius: 15px;
-            padding: 20px 18px;
-            color: var(--ink-black);
+            border-radius: 22px;
+            padding: 26px 20px 20px 20px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transform-style: preserve-3d;
-            border: 1px solid rgba(0, 0, 0, 0.08);
+            transform-style: flat;
             will-change: transform, opacity;
             backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255,255,255,0.7), inset 0 -2px 5px rgba(0,0,0,0.25);
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            overflow: visible;
         }
 
         .card-item.active-shadow {
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 22px 55px rgba(0, 0, 0, 0.8), 0 0 35px var(--gem-glow, rgba(255, 255, 255, 0.3)), inset 0 1px 3px rgba(255,255,255,0.8);
         }
 
-        /* Paper Styles */
-        .bg-kraft        { background: var(--kraft); }
-        .bg-cream        { background: var(--cream); }
-        .bg-blush        { background: var(--blush); }
-        .bg-parchment    { background: var(--parchment); }
-        .bg-sage         { background: var(--sage); }
-        .bg-rose-petal   { background: var(--rose-petal); }
-        .bg-grand-finale { 
-            background: radial-gradient(circle at center, #fff9e6 0%, #fff1c2 65%, #ffd54f 100%);
-            border: 2px solid #d4af37;
+        /* Tactile Paper Texture & Facet Layer */
+        .card-texture-layer {
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
         }
 
-        /* Hand-Stitched Border */
+        /* Fine Handmade Cotton/Linen Fiber Grid Overlay */
+        .card-texture-layer::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(45deg, rgba(0,0,0,0.03) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.03) 75%, rgba(0,0,0,0.03)),
+                linear-gradient(45deg, rgba(255,255,255,0.04) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.04) 75%, rgba(255,255,255,0.04));
+            background-size: 16px 16px, 8px 8px, 8px 8px;
+            opacity: 0.85;
+            mix-blend-mode: overlay;
+        }
+
+        /* Hand-stitched Inner Border */
         .card-item::before {
             content: '';
             position: absolute;
-            inset: 7px;
-            border: 1.5px dashed rgba(110, 70, 30, 0.35);
-            border-radius: 9px;
+            inset: 10px;
+            border: 1.5px dashed var(--gem-border-dash, rgba(0, 0, 0, 0.35));
+            border-radius: 14px;
             pointer-events: none;
+            z-index: 2;
         }
 
-        .bg-grand-finale::before {
-            border: 2px dashed #b8860b;
-        }
-
-        /* Washi Tape Accent */
-        .washi-strip {
+        /* Specular Dynamic Sheen inside texture layer */
+        .card-texture-layer::after {
+            content: '';
             position: absolute;
-            top: -9px;
-            left: 50%;
-            transform: translateX(-50%) rotate(-1.5deg);
-            width: 90px;
-            height: 20px;
-            background: #ffb7b2;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.12);
-            border-left: 2px dashed #fff;
-            border-right: 2px dashed #fff;
-            z-index: 10;
+            top: 0;
+            left: -140%;
+            width: 90%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+            transform: skewX(-25deg);
+            animation: gemSheen 5.5s infinite ease-in-out;
         }
 
-        .washi-gold   { background: #e2b459; transform: translateX(-50%) rotate(2deg); }
-        .washi-grid   { background: #b5deed; transform: translateX(-50%) rotate(-1deg); }
-        .washi-stripes{ background: #e2c7eb; transform: translateX(-50%) rotate(1.5deg); }
-        .washi-heart  { background: #ff8da1; transform: translateX(-50%) rotate(-2deg); }
+        @keyframes gemSheen {
+            0%, 65% { left: -140%; }
+            100% { left: 230%; }
+        }
 
-        /* Card Header & Badge */
+        /* ================= 18 DISTINCT TEXTURED GEM THEMES ================= */
+        /* 1. Ruby Rose Quartz */
+        .gem-ruby {
+            background: radial-gradient(circle at 30% 20%, #fff0f3 0%, #ffccd5 40%, #ff758f 100%);
+            color: #3b0a15;
+            --gem-glow: rgba(255, 75, 110, 0.45);
+            --gem-border-dash: rgba(164, 19, 60, 0.45);
+            border-color: #ffb3c1;
+        }
+        /* 2. Royal Amethyst */
+        .gem-amethyst {
+            background: radial-gradient(circle at 70% 30%, #f7f0fa 0%, #e6ccf2 50%, #c77dff 100%);
+            color: #2b083d;
+            --gem-glow: rgba(157, 78, 221, 0.45);
+            --gem-border-dash: rgba(90, 24, 154, 0.45);
+            border-color: #e0aaff;
+        }
+        /* 3. Golden Topaz Amber */
+        .gem-topaz {
+            background: radial-gradient(circle at 30% 70%, #fffdf0 0%, #ffecb3 45%, #ffc107 100%);
+            color: #422800;
+            --gem-glow: rgba(255, 193, 7, 0.55);
+            --gem-border-dash: rgba(230, 81, 0, 0.5);
+            border-color: #ffe082;
+        }
+        /* 4. Sapphire Azure */
+        .gem-sapphire {
+            background: radial-gradient(circle at 50% 20%, #f0f9ff 0%, #bae6fd 50%, #38bdf8 100%);
+            color: #032b43;
+            --gem-glow: rgba(56, 189, 248, 0.5);
+            --gem-border-dash: rgba(3, 105, 161, 0.5);
+            border-color: #7dd3fc;
+        }
+        /* 5. Morganite Blush Peach */
+        .gem-morganite {
+            background: radial-gradient(circle at 60% 80%, #fff7ed 0%, #ffedd5 45%, #fb923c 100%);
+            color: #431407;
+            --gem-glow: rgba(251, 146, 60, 0.45);
+            --gem-border-dash: rgba(194, 65, 12, 0.45);
+            border-color: #fed7aa;
+        }
+        /* 6. Emerald Jade */
+        .gem-emerald {
+            background: radial-gradient(circle at 40% 30%, #f0fdf4 0%, #bbf7d0 50%, #4ade80 100%);
+            color: #052e16;
+            --gem-glow: rgba(74, 222, 128, 0.5);
+            --gem-border-dash: rgba(22, 101, 52, 0.5);
+            border-color: #86efac;
+        }
+        /* 7. Tanzanite Indigo */
+        .gem-tanzanite {
+            background: radial-gradient(circle at 70% 30%, #f5f3ff 0%, #ddd6fe 50%, #8b5cf6 100%);
+            color: #1e1b4b;
+            --gem-glow: rgba(139, 92, 246, 0.45);
+            --gem-border-dash: rgba(76, 29, 149, 0.5);
+            border-color: #c4b5fd;
+        }
+        /* 8. Cosmic Obsidian Opal */
+        .gem-obsidian {
+            background: radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 60%, #94a3b8 100%);
+            color: #0f172a;
+            --gem-glow: rgba(148, 163, 184, 0.5);
+            --gem-border-dash: rgba(51, 65, 85, 0.5);
+            border-color: #cbd5e1;
+        }
+        /* 9. Carnelian Coral */
+        .gem-carnelian {
+            background: radial-gradient(circle at 30% 30%, #fff1f2 0%, #fecdd3 45%, #fb7185 100%);
+            color: #4c0519;
+            --gem-glow: rgba(251, 113, 133, 0.5);
+            --gem-border-dash: rgba(190, 18, 60, 0.5);
+            border-color: #fda4af;
+        }
+        /* 10. Imperial Citrine */
+        .gem-citrine {
+            background: radial-gradient(circle at 60% 40%, #fefce8 0%, #fef08a 45%, #facc15 100%);
+            color: #422006;
+            --gem-glow: rgba(250, 204, 21, 0.55);
+            --gem-border-dash: rgba(161, 98, 7, 0.55);
+            border-color: #fde047;
+        }
+        /* 11. Aquamarine Ice */
+        .gem-aquamarine {
+            background: radial-gradient(circle at 40% 60%, #ecfeff 0%, #cffafe 50%, #22d3ee 100%);
+            color: #083344;
+            --gem-glow: rgba(34, 211, 238, 0.5);
+            --gem-border-dash: rgba(14, 116, 144, 0.5);
+            border-color: #67e8f9;
+        }
+        /* 12. Fluorite Crystal */
+        .gem-fluorite {
+            background: radial-gradient(circle at 30% 20%, #eef2ff 0%, #e0e7ff 50%, #818cf8 100%);
+            color: #1e1b4b;
+            --gem-glow: rgba(129, 140, 248, 0.5);
+            --gem-border-dash: rgba(55, 48, 163, 0.5);
+            border-color: #a5b4fc;
+        }
+        /* 13. Crimson Garnet */
+        .gem-garnet {
+            background: radial-gradient(circle at 70% 30%, #fff1f2 0%, #ffe4e6 50%, #f43f5e 100%);
+            color: #4c0519;
+            --gem-glow: rgba(244, 63, 94, 0.5);
+            --gem-border-dash: rgba(159, 18, 57, 0.5);
+            border-color: #fda4af;
+        }
+        /* 14. Mint Peridot */
+        .gem-peridot {
+            background: radial-gradient(circle at 40% 70%, #f7fee7 0%, #d9f99d 50%, #a3e635 100%);
+            color: #1a2e05;
+            --gem-glow: rgba(163, 230, 53, 0.5);
+            --gem-border-dash: rgba(77, 124, 15, 0.5);
+            border-color: #bef264;
+        }
+        /* 15. Celestial Lapis */
+        .gem-lapis {
+            background: radial-gradient(circle at 50% 30%, #e0e7ff 0%, #c7d2fe 45%, #6366f1 100%);
+            color: #1e1b4b;
+            --gem-glow: rgba(99, 102, 241, 0.55);
+            --gem-border-dash: rgba(49, 46, 129, 0.55);
+            border-color: #a5b4fc;
+        }
+        /* 16. Ethereal Moonstone */
+        .gem-moonstone {
+            background: radial-gradient(circle at 50% 50%, #fafafa 0%, #ede9fe 45%, #c4b5fd 100%);
+            color: #2e1065;
+            --gem-glow: rgba(196, 181, 253, 0.55);
+            --gem-border-dash: rgba(109, 40, 217, 0.45);
+            border-color: #ddd6fe;
+        }
+        /* 17. Imperial Proposal Velvet Gold */
+        .gem-royal-proposal {
+            background: radial-gradient(circle at 50% 35%, #fff1f2 0%, #ffe4e6 35%, #fb7185 80%, #e11d48 100%);
+            color: #4c0519;
+            --gem-glow: rgba(225, 29, 72, 0.65);
+            --gem-border-dash: rgba(159, 18, 57, 0.65);
+            border: 2.5px solid #d4af37 !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 35px rgba(212, 175, 55, 0.6), inset 0 1px 3px rgba(255,255,255,0.9);
+        }
+        /* 18. Grand Finale Aurora Diamond */
+        .gem-grand-finale {
+            background: radial-gradient(circle at center, #ffffff 0%, #fffbeb 45%, #fef3c7 75%, #fde047 100%);
+            color: #422006;
+            --gem-glow: rgba(253, 224, 71, 0.8);
+            --gem-border-dash: rgba(180, 83, 9, 0.7);
+            border: 3px solid #d4af37 !important;
+            box-shadow: 0 22px 55px rgba(0, 0, 0, 0.85), 0 0 45px rgba(255, 215, 0, 0.7), inset 0 2px 5px rgba(255,255,255,1);
+        }
+
+        /* ================= 4. LUXURY BROOCH & WASHI TAPES ================= */
+        .washi-tape {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-1deg);
+            width: 110px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.22);
+            border-left: 3px dashed rgba(0, 0, 0, 0.25);
+            border-right: 3px dashed rgba(0, 0, 0, 0.25);
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.64rem;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            border-radius: 2px;
+        }
+
+        .washi-ruby      { background: #ff4d6d; color: #fff; transform: translateX(-50%) rotate(-1.5deg); }
+        .washi-amethyst  { background: #9d4edd; color: #fff; transform: translateX(-50%) rotate(1.5deg); }
+        .washi-topaz     { background: #ffc107; color: #422800; transform: translateX(-50%) rotate(-1deg); }
+        .washi-sapphire  { background: #38bdf8; color: #032b43; transform: translateX(-50%) rotate(1deg); }
+        .washi-emerald   { background: #4ade80; color: #052e16; transform: translateX(-50%) rotate(-2deg); }
+        .washi-proposal  { background: linear-gradient(90deg, #d4af37, #fff2a8, #d4af37); color: #3a2200; transform: translateX(-50%) rotate(0deg); width: 140px; font-weight: 900; }
+        .washi-finale    { background: linear-gradient(90deg, #ff4081, #ffd700, #ff4081); color: #fff; transform: translateX(-50%) rotate(0deg); width: 150px; font-weight: 900; }
+
+        /* Card Content Layer */
+        .card-inner-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
         .card-header-box {
             display: flex;
             justify-content: space-between;
@@ -321,81 +683,181 @@
         }
 
         .card-stamp-badge {
-            font-size: 0.62rem;
+            font-size: 0.65rem;
             font-weight: 800;
             letter-spacing: 0.8px;
             text-transform: uppercase;
-            color: #8c5a32;
-            background: rgba(140, 90, 50, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1px solid rgba(140, 90, 50, 0.2);
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.12);
         }
 
         .card-num-badge {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #b08968;
+            font-size: 0.78rem;
+            font-weight: 800;
+            opacity: 0.75;
         }
 
         .card-topic-title {
             font-family: 'Playfair Display', serif;
             font-size: 1.18rem;
             font-weight: 800;
-            color: #3b1e16;
-            margin: 4px 0 2px 0;
+            margin: 6px 0 2px 0;
             text-align: center;
+            letter-spacing: -0.2px;
         }
 
         /* Handwritten Body */
         .card-message {
             font-family: 'Caveat', cursive;
-            font-size: 1.25rem;
-            line-height: 1.38;
-            color: #2b1712;
+            font-size: 1.35rem;
+            line-height: 1.34;
             text-align: center;
-            padding: 2px;
+            padding: 2px 4px;
             margin: auto 0;
         }
 
+        /* Romantic Highlighting Badges */
         .hl {
-            color: #b71c1c;
             font-weight: 700;
-            background: rgba(255, 205, 210, 0.5);
-            padding: 1px 4px;
-            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.65);
+            padding: 1px 6px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
         }
 
         .hl-love {
-            color: #c2185b;
+            color: #ad1457;
             font-weight: 700;
-            background: rgba(248, 187, 208, 0.6);
-            padding: 1px 4px;
-            border-radius: 3px;
+            background: rgba(248, 187, 208, 0.8);
+            padding: 1px 6px;
+            border-radius: 4px;
         }
 
         .hl-gold {
-            color: #8a6500;
-            font-weight: 700;
-            background: rgba(255, 236, 179, 0.65);
-            padding: 1px 4px;
-            border-radius: 3px;
-        }
-
-        .hl-math {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.98rem;
+            color: #8c6300;
             font-weight: 800;
-            color: #0d47a1;
+            background: rgba(255, 236, 179, 0.9);
+            padding: 1px 6px;
+            border-radius: 4px;
         }
 
-        /* Footer */
+        .hl-cyan {
+            color: #006064;
+            font-weight: 700;
+            background: rgba(178, 235, 242, 0.8);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+
+        .hl-ruby {
+            color: #b71c1c;
+            font-weight: 700;
+            background: rgba(255, 205, 210, 0.85);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+
+        .hl-proposal {
+            display: block;
+            margin: 6px 0;
+            color: #b71c1c;
+            font-weight: 800;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(183, 28, 28, 0.25);
+        }
+
+        .hl-proposal-question {
+            display: block;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.32rem;
+            font-weight: 900;
+            color: #880e4f;
+            background: linear-gradient(135deg, rgba(255,243,224,0.95), rgba(255,224,178,0.95));
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1.5px solid #d4af37;
+            box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
+            margin: 6px 0 8px 0;
+        }
+
+        /* ================= 5. INTERACTIVE "SAY YES" PROPOSAL BUTTON ================= */
+        .proposal-yes-btn {
+            background: linear-gradient(135deg, #ff4081, #d500f9);
+            color: #fff;
+            border: 2px solid #ffd700;
+            padding: 9px 20px;
+            font-size: 0.84rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(213, 0, 249, 0.5);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            margin-top: 4px;
+            animation: pulseYesBtn 1.8s infinite alternate;
+        }
+
+        @keyframes pulseYesBtn {
+            0% { transform: scale(1); box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4); }
+            100% { transform: scale(1.06); box-shadow: 0 8px 25px rgba(213, 0, 249, 0.7); }
+        }
+
+        .proposal-accepted-box {
+            animation: zoomAccepted 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            text-align: center;
+            padding: 8px;
+        }
+
+        @keyframes zoomAccepted {
+            0% { transform: scale(0.6); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .accepted-ring-icon {
+            font-size: 2.2rem;
+            margin-bottom: 2px;
+            filter: drop-shadow(0 2px 8px rgba(255, 215, 0, 0.6));
+        }
+
+        .accepted-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #880e4f;
+            text-shadow: 0 2px 8px rgba(255, 64, 129, 0.3);
+        }
+
+        .accepted-sub {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.35rem;
+            color: #ad1457;
+            font-weight: 700;
+            margin-top: 3px;
+        }
+
+        .grand-finale-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.45rem;
+            font-weight: 900;
+            color: #b8860b;
+            text-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+            margin: 4px 0;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        /* Card Footer */
         .card-footer-box {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px dashed rgba(110, 70, 30, 0.22);
+            border-top: 1px dashed rgba(0, 0, 0, 0.2);
             padding-top: 6px;
         }
 
@@ -405,21 +867,22 @@
 
         .card-love-sign {
             font-family: 'Reenie Beanie', cursive;
-            font-size: 1.15rem;
-            color: #8a5a36;
+            font-size: 1.3rem;
+            opacity: 0.85;
+            font-weight: 600;
         }
 
         /* ================= SPREAD GALLERY VIEW ================= */
         .gallery-grid-view {
             position: fixed;
             inset: 0;
-            background: rgba(8, 2, 12, 0.96);
+            background: rgba(10, 2, 14, 0.96);
             z-index: 150;
             overflow-y: auto;
-            padding: 65px 16px 30px 16px;
+            padding: 70px 16px 30px 16px;
             display: none;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
         }
 
         .gallery-grid-view.active {
@@ -427,103 +890,129 @@
         }
 
         .gallery-card-item {
-            border-radius: 12px;
-            padding: 16px 14px;
-            color: var(--ink-black);
+            border-radius: 18px;
+            padding: 24px 18px 18px 18px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 310px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            border: 1px solid rgba(0,0,0,0.1);
+            min-height: 340px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             position: relative;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
         .gallery-card-item:hover {
-            transform: translateY(-3px) scale(1.02);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 14px 35px rgba(0,0,0,0.7);
         }
 
-        /* COMPACT, NON-INTRUSIVE BOTTOM CONTROLS DOCK */
+        /* ================= COMPACT CONTROLS DOCK ================= */
         .deck-dock {
             position: fixed;
             bottom: 14px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(22, 7, 30, 0.92);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 5px 14px;
+            background: rgba(28, 8, 35, 0.94);
+            border: 1.5px solid rgba(255, 215, 0, 0.3);
+            padding: 6px 16px;
             border-radius: 30px;
             display: none;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             z-index: 90;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
         }
 
         .dock-btn {
             background: linear-gradient(135deg, #ff4081, #f50057);
             color: #fff;
             border: none;
-            padding: 5px 12px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            border-radius: 18px;
+            padding: 6px 14px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            border-radius: 20px;
             cursor: pointer;
-            transition: transform 0.2s;
-            box-shadow: 0 2px 8px rgba(245, 0, 87, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 3px 10px rgba(245, 0, 87, 0.35);
             white-space: nowrap;
         }
 
         .dock-btn:hover {
-            transform: scale(1.04);
+            transform: scale(1.05);
         }
 
         .counter-badge {
-            font-size: 0.74rem;
-            font-weight: 700;
-            color: #ffd2e5;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: #ffe6f0;
             white-space: nowrap;
         }
 
         .celebrate-btn {
             display: none;
-            background: linear-gradient(135deg, #ffd700, #ff9100);
-            color: #211003;
+            background: linear-gradient(135deg, #ffd700, #ff8da1);
+            color: #260c1d;
             border: none;
-            padding: 5px 14px;
-            font-size: 0.74rem;
-            font-weight: 800;
-            border-radius: 18px;
+            padding: 6px 16px;
+            font-size: 0.76rem;
+            font-weight: 900;
+            border-radius: 20px;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-            animation: pulseFoil 1.8s infinite alternate;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            animation: pulseCelebrate 1.8s infinite alternate;
         }
 
-        @keyframes pulseFoil {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.05); }
+        @keyframes pulseCelebrate {
+            0% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+            100% { transform: scale(1.06); box-shadow: 0 0 25px rgba(255, 64, 129, 0.7); }
         }
 
         @media (max-width: 768px) {
-            .deck-container { width: 84vw; height: 60vh; }
-            .card-message { font-size: 1.15rem; }
-            .card-topic-title { font-size: 1.05rem; }
-            .keepsake-parcel { width: 250px; height: 170px; }
-            .stage-viewport { padding-bottom: 50px; }
+            .deck-container { width: 88vw; max-width: 350px; height: 64vh; max-height: 520px; }
+            .card-message { font-size: 1.25rem; }
+            .card-topic-title { font-size: 1.1rem; }
+            .keepsake-parcel { width: 250px; height: 175px; }
+            .stage-viewport { padding: 60px 14px 65px 14px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Particle Canvas -->
+    <!-- Ambient Sparkle Canvas -->
     <canvas id="particleCanvas"></canvas>
+
+    <!-- ================= 1. GPU BENCHMARK & BUFFER ENTRY CURTAIN ================= -->
+    <div class="entry-curtain" id="curtain">
+        <div class="entry-card">
+            <h1>A SPECIAL GIFT FOR JUHU</h1>
+            <p>18 Handcrafted Love Keepsakes & Memories created just for you. Initializing 3D Gem Physics... 💎✨</p>
+            
+            <div class="loader-container">
+                <div class="loader-bar" id="loaderBar"></div>
+            </div>
+            <div class="loader-status" id="loaderStatus">Running 3D GPU load benchmark... 0%</div>
+            <div class="device-badge" id="deviceBadge">Measuring GPU render throughput...</div>
+
+            <div class="mode-selector-group" id="modeSelector">
+                <button class="mode-btn" id="btnLowMode" onclick="setGraphicMode('LOW')">⚡ Low</button>
+                <button class="mode-btn" id="btnNormalMode" onclick="setGraphicMode('NORMAL')">✨ Normal</button>
+                <button class="mode-btn active" id="btnUltraMode" onclick="setGraphicMode('ULTRA')">💎 Ultra HD</button>
+            </div>
+
+            <button class="enter-btn" id="enterBtn" onclick="enterRoom()">Enter Keepsake 💕</button>
+        </div>
+    </div>
 
     <!-- Top UI Header -->
     <div class="top-nav">
         <button class="nav-btn" onclick="window.location.href='page3.html'">🌊 Back</button>
-        <button class="mode-toggle-btn" id="toggleSpreadBtn" onclick="toggleSpreadView()">🎴 View All 19</button>
+        <div class="graphics-pill" id="dockGraphicPill" onclick="cycleGraphicMode()" title="Click to toggle Graphics Quality">
+            <span id="dockGraphicText">💎 ULTRA</span>
+        </div>
+        <button class="mode-toggle-btn" id="toggleSpreadBtn" onclick="toggleSpreadView()">🎴 View All 18</button>
         <button class="nav-btn" id="soundBtn" onclick="toggleMusic()">🎵 Music: On</button>
     </div>
 
@@ -532,232 +1021,369 @@
         <div class="keepsake-parcel" onclick="openKeepsakeBox()">
             <div class="ribbon-h"></div>
             <div class="ribbon-v"></div>
-            <div class="ribbon-bow">🎀</div>
+            <div class="ribbon-bow">✨</div>
         </div>
-        <div class="intro-title">A Keepsake Box for You</div>
-        <div class="intro-sub">MAINE KHUD SOCHE aur LIKHE HAI no copy</div>
-        <button class="open-box-btn" onclick="openKeepsakeBox()">Untie Ribbon & Open 💕</button>
+        <div class="intro-title">A Keepsake Box for Juhu 💕</div>
+        <div class="intro-sub">MAINE KHUD SOCHE AUR LIKHE HAI NO COPY</div>
+        <button class="open-box-btn" onclick="openKeepsakeBox()">Untie Ribbon & Open 🎀</button>
     </div>
 
     <!-- ================= 3D STAGE & CARDS STACK ================= -->
     <div class="stage-viewport" id="stageViewport">
         <div class="deck-container" id="deckContainer">
-            <!-- 19 Handcrafted Cards Injected by JavaScript -->
+            <!-- 18 Handcrafted Gem Cards Injected by JavaScript -->
         </div>
     </div>
 
     <!-- ================= SPREAD GALLERY VIEW ================= -->
     <div class="gallery-grid-view" id="galleryGridView">
-        <!-- 19 Spread Cards Rendered Here -->
+        <!-- 18 Spread Cards Rendered Here -->
     </div>
 
     <!-- COMPACT BOTTOM CONTROLS DOCK -->
     <div class="deck-dock" id="deckDock">
         <button class="dock-btn" onclick="prevCard()">◀ Prev</button>
-        <div class="counter-badge" id="cardCounterText">Card 1 of 19</div>
+        <div class="counter-badge" id="cardCounterText">Card 1 of 18</div>
         <button class="dock-btn" id="nextCardBtn" onclick="nextCard()">Next ▶</button>
-        <button class="celebrate-btn" id="celebrateBtn" onclick="triggerHeartCelebration()"> HAPPY BIRTHDAY DARLING </button>
+        <button class="celebrate-btn" id="celebrateBtn" onclick="triggerHeartCelebration()">💖 HAPPY BIRTHDAY DARLING 💖</button>
     </div>
 
-    <!-- ================= STAGED IMAGES FOR SECURE BUILDER V13 ================= -->
+    <!-- ================= STAGED IMAGES FOR SAFE BUILDER ================= -->
     <div style="display: none;" aria-hidden="true">
         <img id="raw_card_img_1" src="card_photo1.jpg">
         <img id="raw_card_img_2" src="card_photo2.jpg">
     </div>
 
-    <!-- ================= 19 CARDS DATA & INTERACTION LOGIC ================= -->
+    <!-- ================= 18 CARDS DATA & INTERACTION ENGINE ================= -->
     <script>
-        /* ================= 19 PLAYFUL + APPRECIATION + GRAND FINALE CARDS ================= */
+        /* ================= GRAPHICS MODE & BENCHMARK CALIBRATION ================= */
+        let currentGraphicMode = 'ULTRA';
+        let isBenchmarkFinished = false;
+        let isProposalAccepted = false;
+
+        function run3DStressBenchmark() {
+            return new Promise((resolve) => {
+                const startTime = performance.now();
+
+                const testCanvas = document.createElement('canvas');
+                testCanvas.width = 256;
+                testCanvas.height = 256;
+                const gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+
+                if (gl) {
+                    const vShader = gl.createShader(gl.VERTEX_SHADER);
+                    gl.shaderSource(vShader, `attribute vec3 p; void main(){ gl_Position = vec4(p, 1.0); }`);
+                    gl.compileShader(vShader);
+
+                    const fShader = gl.createShader(gl.FRAGMENT_SHADER);
+                    gl.shaderSource(fShader, `precision mediump float; void main(){ gl_FragColor = vec4(1.0); }`);
+                    gl.compileShader(fShader);
+
+                    const program = gl.createProgram();
+                    gl.attachShader(program, vShader);
+                    gl.attachShader(program, fShader);
+                    gl.linkProgram(program);
+                    gl.useProgram(program);
+
+                    const verts = new Float32Array(15000);
+                    for (let i = 0; i < 5000; i++) {
+                        verts[i*3] = Math.sin(i * 0.1);
+                        verts[i*3 + 1] = Math.cos(i * 0.1);
+                        verts[i*3 + 2] = 0;
+                    }
+
+                    const buffer = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                    gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+
+                    const posLoc = gl.getAttribLocation(program, "p");
+                    gl.enableVertexAttribArray(posLoc);
+                    gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
+
+                    for (let f = 0; f < 3; f++) gl.drawArrays(gl.LINE_STRIP, 0, 5000);
+                    gl.finish();
+
+                    gl.deleteBuffer(buffer);
+                    gl.deleteProgram(program);
+                    gl.deleteShader(vShader);
+                    gl.deleteShader(fShader);
+                }
+
+                const elapsed = performance.now() - startTime;
+                const badge = document.getElementById('deviceBadge');
+
+                // Animate progress bar smoothly
+                let currentPct = 0;
+                const interval = setInterval(() => {
+                    currentPct += 10;
+                    const bar = document.getElementById('loaderBar');
+                    const status = document.getElementById('loaderStatus');
+                    if (bar) bar.style.width = `${currentPct}%`;
+                    if (status) status.innerText = `WAIITT!!! LET ME SCAN🧐BUTKU ${currentPct}%`;
+
+                    if (currentPct >= 100) {
+                        clearInterval(interval);
+                        if (elapsed < 35) {
+                            currentGraphicMode = 'ULTRA';
+                            if (badge) badge.innerText = "💎 Ultra HD Detected (Full Prismatic Sheen & Particles)";
+                        } else if (elapsed < 75) {
+                            currentGraphicMode = 'NORMAL';
+                            if (badge) badge.innerText = "✨ Normal Mode Activated (Smooth Calibration)";
+                        } else {
+                            currentGraphicMode = 'LOW';
+                            if (badge) badge.innerText = "⚡ Low Mode (Maximum FPS & Battery Optimized)";
+                        }
+                        updateGraphicModeUI();
+                        isBenchmarkFinished = true;
+                        const enterBtn = document.getElementById('enterBtn');
+                        const statusEl = document.getElementById('loaderStatus');
+                        if (statusEl) statusEl.innerText = "Readyyy😁";
+                        if (enterBtn) enterBtn.classList.add('ready');
+                        resolve();
+                    }
+                }, 80);
+            });
+        }
+
+        function updateGraphicModeUI() {
+            const btnLow = document.getElementById('btnLowMode');
+            const btnNormal = document.getElementById('btnNormalMode');
+            const btnUltra = document.getElementById('btnUltraMode');
+            const dockPill = document.getElementById('dockGraphicText');
+
+            if (btnLow) btnLow.classList.toggle('active', currentGraphicMode === 'LOW');
+            if (btnNormal) btnNormal.classList.toggle('active', currentGraphicMode === 'NORMAL');
+            if (btnUltra) btnUltra.classList.toggle('active', currentGraphicMode === 'ULTRA');
+
+            if (dockPill) {
+                if (currentGraphicMode === 'ULTRA') dockPill.innerText = '💎 ULTRA';
+                else if (currentGraphicMode === 'NORMAL') dockPill.innerText = '✨ NORMAL';
+                else dockPill.innerText = '⚡ LOW';
+            }
+
+            adjustParticlesForMode();
+        }
+
+        function setGraphicMode(mode) {
+            currentGraphicMode = mode;
+            updateGraphicModeUI();
+        }
+
+        function cycleGraphicMode() {
+            if (currentGraphicMode === 'ULTRA') setGraphicMode('NORMAL');
+            else if (currentGraphicMode === 'NORMAL') setGraphicMode('LOW');
+            else setGraphicMode('ULTRA');
+        }
+
+        function enterRoom() {
+            initAudio();
+            const curtain = document.getElementById('curtain');
+            curtain.style.opacity = '0';
+            curtain.style.visibility = 'hidden';
+            isMusicPlaying = true;
+            playRomanticChords();
+        }
+
+        /* ================= 18 HANDCRAFTED GEMSTONE LOVE CARDS ================= */
         const cardsData = [
-            // 01. Chemistry Paper
+            // 01. #29 Birthday opening 🎂
             {
                 num: "01",
-                tag: "CHEMISTRY DEPT. 🧪",
-                title: "Research Proposal",
-                text: "I want to publish science papers, about <span class='hl'>'Our Chemistry'</span>. 🔬✨",
-                doodle: "🧪⚗️",
-                bg: "bg-kraft",
-                tape: "washi-strip"
+                tag: "BIRTHDAY BLESSINGS 🎂",
+                title: "Happiest Birthday My Sweet Juhu!",
+                text: "HAPPY BIRTHDAY MY SWEET LITTLE JUHU🫶🏻.<br><br>MAY THIS YEAR GIVE YOU ALLL HAPPINESS AND YOU GET WHATEVER YOU MANIFEST.<br><br><span class='hl-ruby'>MAY BAPPA BLESS YOU AND KEEP YOU ALWAYS WITH ME😁.</span>",
+                doodle: "🎂🌸🙏✨",
+                bg: "gem-ruby",
+                tape: "washi-ruby",
+                tapeText: "RUBY BLESSING"
             },
-            // 02. Appreciation (My Safe Place)
+            // 02. #24 Keyboard joke 😂
             {
                 num: "02",
-                tag: "MY SAFE PLACE 🏡",
-                title: "Where I Belong",
-                text: "Okay bad start But Beyond all the jokes, when the world gets loud and heavy, <span class='hl-love'>your voice is the only peace I search for</span>. You are my safe place. 🫂❤️",
-                doodle: "🏡💖",
-                bg: "bg-rose-petal",
-                tape: "washi-heart"
+                tag: "KEYBOARD SHORTCUT ⌨️",
+                title: "Secret Key",
+                text: "Do you know who i love most?<br><br><span class='hl-love'>Look between T and I of your keyboard.</span> 👀⌨️❤️",
+                doodle: "⌨️🎯🤭",
+                bg: "gem-amethyst",
+                tape: "washi-amethyst",
+                tapeText: "AMETHYST CLUE"
             },
-            // 03. Practicals
+            // 03. #12 Butku-oin 🎂
             {
                 num: "03",
-                tag: "LAB PRACTICALS 🧬",
-                title: "Science Struggle",
-                text: "Being a science student is so hard... imagine learning chemistry and biology, when I could be doing <span class='hl'>practicals of both with you</span>.... 😉🥼 WANNA??",
-                doodle: "🧬❤️",
-                bg: "bg-cream",
-                tape: "washi-grid"
-            },
-            // 04. Circuit Theory / Electricity
-            {
-                num: "04",
-                tag: "CIRCUIT THEORY ⚡",
-                title: "Power Cut Scheme",
-                text: "I study electronics... so that I can <span class='hl'>cut the electricity</span> when we are alone at night. 💡🔌😁",
-                doodle: "⚡🕯️",
-                bg: "bg-sage",
-                tape: "washi-stripes"
-            },
-            // 05. Appreciation (Effortless Beauty)
-            {
-                num: "05",
-                tag: "EFFORTLESS BEAUTY 🌸",
-                title: "Prettiest Smile",
-                text: "You don't even realize how effortlessly stunning you are. Everytime, even with zero effort, <span class='hl-love'>you take my breath away every single time i see you</span>. ✨🥺",
-                doodle: "🌸🥰",
-                bg: "bg-blush",
-                tape: "washi-gold"
-            },
-            // 06. Bitcoin 2008 / Butku-oin
-            {
-                num: "06",
                 tag: "BITCOIN 2008 🪙",
                 title: "My Favorite Coin",
-                text: "I didn't find it surprising that Bitcoin was born in 2008...<br><br><span class='hl-gold'>Happy Birthday My Butku-oin!</span> 🪙🎂✨",
-                doodle: "🪙💖",
-                bg: "bg-parchment",
-                tape: "washi-gold"
+                text: "I didn't find it surprising that Bitcoin was born in 2008...<br><br><span class='hl-gold'>Happy birthday, My Butku-oin. 😭🪙🎂✨</span>",
+                doodle: "🪙🎂💖",
+                bg: "gem-topaz",
+                tape: "washi-topaz",
+                tapeText: "GOLD TOPAZ"
             },
-            // 07. Integration / Infinity
+            // 04. #19 U + mbrella ☔
+            {
+                num: "04",
+                tag: "MONSOON REASON ☔",
+                title: "Rainy Days",
+                text: "People want Umbrellas for rain...<br><br>But i don't need 'mbrellas' — <span class='hl-cyan'>I just need U.</span> 🌧️🥺🤍",
+                doodle: "☔🌧️💖",
+                bg: "gem-sapphire",
+                tape: "washi-sapphire",
+                tapeText: "SAPPHIRE RAIN"
+            },
+            // 05. #26 To-get-her 😭
+            {
+                num: "05",
+                tag: "DESTINY'S SPELL 🧩",
+                title: "STUPID GIRL",
+                text: "MI dont understand commerce,<br><br> But I do understand <span class='hl-love'>For my love, There is no DMU.</span> 😭❤️✨",
+                doodle: "🧩🔐❤️",
+                bg: "gem-morganite",
+                tape: "washi-ruby",
+                tapeText: "MORGANITE"
+            },
+            // 06. #15 Phi ♾️
+            {
+                num: "06",
+                tag: "GOLDEN RATIO 📏",
+                title: "Divine Proportion",
+                text: "Mathematicians searched centuries for perfection...<br><br>I found my value of <span class='hl'>'Phi' (Φ)</span> by looking at you. ✨🌀",
+                doodle: "🌀✨📐",
+                bg: "gem-emerald",
+                tape: "washi-emerald",
+                tapeText: "EMERALD PHI"
+            },
+            // 07. #13 Rotated 8 ♾️
             {
                 num: "07",
                 tag: "INTEGRATION 📐",
                 title: "Definite Integral",
-                text: "When I integrated <span class='hl'>Your Prettiness</span> from zero to forever, I got a rotated 8: 🧐",
-                doodle: "♾️📐",
-                bg: "bg-cream",
-                tape: "washi-strip"
+                text: "What is the taste of your cute gaals??<br><br>Only if could taste it...<span class='hl-gold'>😶‍🌫️</span> 🧐❤️",
+                doodle: "♾️📐✨",
+                bg: "gem-tanzanite",
+                tape: "washi-amethyst",
+                tapeText: "TANZANITE"
             },
-            // 08. Appreciation (Sweetest Soul)
+            // 08. #25 Mathematics couldn't define you 🥹
             {
                 num: "08",
-                tag: "PURE HEART 🥺",
-                title: "The Sweetest Soul",
-                text: "Today is your birthday, My Cute, MY PRETTY, MY WIFEYS BIRTHDAY, I want to<span class='hl-love'>be the best man for you every single day</span>. 🌷🤍",
-                doodle: "🕊️💖",
-                bg: "bg-rose-petal",
-                tape: "washi-heart"
+                tag: "PURE INFINITY 🥹",
+                title: "Beyond Calculation",
+                text: "When mathematics couldn't define your beauty...<br><br><span class='hl-love'>it invented infinity.</span> 🌌🥺🤍",
+                doodle: "🌌♾️💫",
+                bg: "gem-obsidian",
+                tape: "washi-topaz",
+                tapeText: "OPAL OBSIDIAN"
             },
-            // 09. BUTKU
+            // 09. #14 Gaals 😭❤️
             {
                 num: "09",
-                tag: "RAMANUJAN VIBES 🧮",
-                title: "Sweet Dreams",
-                text: "Ramanujan dreams of mathematics... but I dream of your <span class='hl'>cute 'Gaals'</span>! 😍🥟",
-                doodle: "🤤🥟",
-                bg: "bg-blush",
-                tape: "washi-grid"
+                tag: "SWEETEST DREAMS 🥟",
+                title: "Only Two Things",
+                text: "People dream of many things...<br><br>but I dream of only two things.<br><span class='hl-ruby'>YOUR CUTE 'GAALS'😍.</span>",
+                doodle: "🥟🤤🥰",
+                bg: "gem-carnelian",
+                tape: "washi-ruby",
+                tapeText: "CARNELIAN"
             },
-            // 10. Golden Ratio / Phi
+            // 10. #16 Interest 💰
             {
                 num: "10",
-                tag: "GOLDEN RATIO 📏",
-                title: "Divine Proportion",
-                text: "Mathematicians spent centuries searching for the Golden Ratio... but I found my value of <span class='hl'>'Phi' (Φ)</span> just by looking at you. ✨",
-                doodle: "✨🌀",
-                bg: "bg-parchment",
-                tape: "washi-gold"
+                tag: "FINANCE 101 💳",
+                title: "Zero Loan Policy",
+                text: "I didn't take a loan...<br><br>but I still pay <span class='hl-gold'>a lot of interest to you!</span> 📈💸❤️",
+                doodle: "💳📈💖",
+                bg: "gem-citrine",
+                tape: "washi-topaz",
+                tapeText: "CITRINE GOLD"
             },
-            // 11. Appreciation (My Biggest Blessing)
+            // 11. #22 Iodine + velocity 🧪
             {
                 num: "11",
-                tag: "MY BLESSING ✨",
-                title: "Thank You For You",
-                text: "I will do everything I can to keep you happy my wifey, THANKS YOU... HAPPY BIRTHDAY AS WELL and <span class='hl-love'> </span> You are Everything i need",
-                doodle: "🌟🙏",
-                bg: "bg-sage",
-                tape: "washi-stripes"
+                tag: "CHEMISTRY SPEED 🧪",
+                title: "Elemental Formula",
+                text: "<span class='hl-cyan'>\"Iodine\" (I)</span> wants <span class='hl-cyan'>\"Initial Velocity\" (u)</span>...<br><br>which clearly means: <span class='hl-love'>I WANT U!</span> 🏎️💨🧪",
+                doodle: "🧪💡🏎️",
+                bg: "gem-aquamarine",
+                tape: "washi-sapphire",
+                tapeText: "AQUAMARINE"
             },
-            // 12. Finance / Zero Loan
+            // 12. #20 Xe + F 🧪
             {
                 num: "12",
-                tag: "BANKING & FINANCE 💳",
-                title: "Zero Loan Policy",
-                text: "Wait I didn't take any loan... but I still pay <span class='hl'>a lot of interest</span> to you! 📈💸❤️",
-                doodle: "📈💰",
-                bg: "bg-kraft",
-                tape: "washi-stripes"
+                tag: "NOBLE BOND ⚡",
+                title: "The Only Reaction",
+                text: "If you are <span class='hl'>Xenon (Xe)</span>...<br><br><span class='hl-love'>I will be Fluorine (F).</span> ⚡🧬❤️",
+                doodle: "⚡🧬✨",
+                bg: "gem-fluorite",
+                tape: "washi-amethyst",
+                tapeText: "FLUORITE"
             },
-            // 13. Cosmos / Small world Butku
+            // 13. #3 Our Chemistry ❤️
             {
                 num: "13",
-                tag: "COSMOS 🌍",
-                title: "Literal Truth",
-                text: "They say the universe is infinite, but <span class='hl'>my whole world is small small</span>, literally. (Because it's you, my Butku!) 🤏🏻🌍💖",
-                doodle: "🌍🤏🏻",
-                bg: "bg-cream",
-                tape: "washi-strip"
+                tag: "PROMISE OF SCIENCE ❤️",
+                title: "Always Complete",
+                text: "Scientific Chemistry may be incomplete...<br><br>but <span class='hl-ruby'>our chemistry will be complete.</span><br>And I promise you that. 🔬💍",
+                doodle: "🔬💍💖",
+                bg: "gem-garnet",
+                tape: "washi-ruby",
+                tapeText: "GARNET RED"
             },
-            // 14. Doctor's Orders / Gaals
+            // 14. #8 Science paper 🧪📄
             {
                 num: "14",
-                tag: "PRESCRIPTION 💊",
-                title: "Doctor's Orders",
-                text: "I got a serious vitamin deficiency... Doctor suggested I must <span class='hl'>eat your cute gaals</span>!👉🏻👈🏻🥺",
-                doodle: "💊🥟",
-                bg: "bg-blush",
-                tape: "washi-grid"
+                tag: "REASEARCH PROPOSAL📄",
+                title: "CUTENESS OVERLOAD",
+                text: "I find it soooo cute that you a tiny TINY brain<span class='hl'>\"That is processing these texts\"</span>. SOO CUTE🎀",
+                doodle: "✨️🫵🏻🤏🏻",
+                bg: "gem-peridot",
+                tape: "washi-emerald",
+                tapeText: "PERIDOT SAGE"
             },
-            // 15. Economics / No DMU
+            // 15. #27 Fundamental forces ❤️
             {
                 num: "15",
-                tag: "ECONOMICS 101 📊",
-                title: "No Law Applies",
-                text: "I don't understand commerce, but I do understand that for my love for you, there is <span class='hl'>NO DMU</span> (Diminishing Marginal Utility)! It only grows! 📈❤️ [Sorry hehe]",
-                doodle: "📊📈",
-                bg: "bg-kraft",
-                tape: "washi-strip"
+                tag: "PHYSICS OF US 🧲",
+                title: "The 6th Force",
+                text: "Physics says there are only 4 fundamental forces...<br><br>'cause they don't know <span class='hl-cyan'>what force of attraction is between us.</span> 🧲💫❤️",
+                doodle: "🧲🌌✨",
+                bg: "gem-lapis",
+                tape: "washi-sapphire",
+                tapeText: "LAPIS LAZULI"
             },
-            // 16. Physics / Iodine wants u
+            // 16. #2 1000 lives ❤️
             {
                 num: "16",
-                tag: "MECHANICS 🏎️",
-                title: "Physics Notation",
-                text: " <span class='hl'></span> Iodine wants <span class='hl'>''</span> Initial Velocity... which clearly means??? <span class='hl'></span>! 🏎️💨",
-                doodle: "💡🚗",
-                bg: "bg-cream",
-                tape: "washi-grid"
+                tag: "1000 LIFETIMES 🕊️",
+                title: "Every Single Time",
+                text: "If I have another 1000 lives...<br><br><span class='hl-love'>I will choose you as my girlfriend and partner EVERY SINGLE TIME.</span> 🔐🫂❤️",
+                doodle: "🕊️🔐💍",
+                bg: "gem-moonstone",
+                tape: "washi-amethyst",
+                tapeText: "MOONSTONE"
             },
-            // 17. Keyboard T-I
+            // 17. #1 The actual proposal 💍
             {
                 num: "17",
-                tag: "KEYBOARD SHORTCUT ⌨️",
-                title: "Secret Key",
-                text: "Do you know who I love the most in this entire universe?<br><br><span class='hl'>Look between 'T' and 'I' on your keyboard.</span> 👀⌨️ ",
-                doodle: "⌨️🎯",
-                bg: "bg-sage",
-                tape: "washi-stripes"
+                tag: "👑 THE BIRTHDAY PROPOSAL 👑",
+                title: "From My Deepest Heart",
+                isProposalCard: true,
+                text: "You did propose to me on my birthday. So today <span class='hl-proposal'>I AM GOING TO PROPOSE TO YOU, ON YOUR BIRTHDAY.</span><span class='hl-proposal-question'>Will You Be My Life-long Life Partner? 💍🤍✨</span>",
+                doodle: "💍👑💖",
+                bg: "gem-royal-proposal",
+                tape: "washi-proposal",
+                tapeText: "👑 LIFETIME PROPOSAL 👑"
             },
-            // 18. Appreciation (Lifetime Decision)
+            // 18. #7 Final line 🥳❤️
             {
                 num: "18",
-                tag: "MY FOREVER 💍",
-                title: "Easiest Choice",
-                text: "Out of every single choice in my life, choosing you and giving you my heart will forever be <span class='hl-love'>the easiest and best decision I will ever make</span>. 🔐❤️",
-                doodle: "💍💫",
-                bg: "bg-rose-petal",
-                tape: "washi-heart"
-            },
-            // 19. GRAND FINALE BIRTHDAY QUEEN CARD
-            {
-                num: "19",
-                tag: "👑 TO MY BIRTHDAY QUEEN 👑",
-                title: "Happiest Birthday, My Love!",
-                text: "Happy Birthday to the most BEAUTIFUL girl in the world! Thank you for filling my life with so much laughter, Sparks, and magic. May this year bring you all the endless joy my babe deserves.<br><br><span class='hl-gold'>I love you beyond words, beyond time, and beyond infinity! 🎂🎉💖✨</span>",
-                doodle: "👑🍰💐🎁",
-                bg: "bg-grand-finale",
-                tape: "washi-gold"
+                tag: "👑 GRAND FINALE 👑",
+                title: "Happiest Birthday Darling",
+                text: "<div class='grand-finale-title'>🥳 YOU AND ME FOREVER 🥳</div><br><span class='hl-gold'>Happy Birthday, my Juhu, my love, my life partner, my everything! 🎂🎆💖✨</span>",
+                doodle: "🥳🎂🍰💐🎁",
+                bg: "gem-grand-finale",
+                tape: "washi-finale",
+                tapeText: "✨ FOREVER & ALWAYS ✨"
             }
         ];
 
@@ -772,7 +1398,6 @@
             isBoxOpened = true;
 
             playPaperShuffleSound();
-            playRomanticChords();
 
             const introStage = document.getElementById('introBoxStage');
             const stageViewport = document.getElementById('stageViewport');
@@ -786,7 +1411,7 @@
                 deckDock.style.display = 'flex';
                 toggleSpreadBtn.style.display = 'block';
                 buildCardsHTML();
-            }, 400);
+            }, 350);
         }
 
         /* ================= RENDER CARDS ON STAGE ================= */
@@ -798,21 +1423,45 @@
             galleryGrid.innerHTML = '';
 
             cardsData.forEach((c, index) => {
-                // 1. Deck Card
+                // Determine Proposal Card Content
+                let cardBodyHTML = c.text;
+                if (c.isProposalCard) {
+                    if (isProposalAccepted) {
+                        cardBodyHTML = `
+                            <div class="proposal-accepted-box">
+                                <div class="accepted-ring-icon">💍✨💖</div>
+                                <div class="accepted-title">SHE SAID YES! 😭❤️</div>
+                                <div class="accepted-sub">Forever & Always My Wife! 💕</div>
+                            </div>
+                        `;
+                    } else {
+                        cardBodyHTML = `
+                            <div id="proposalCardBody">
+                                ${c.text}
+                                <button class="proposal-yes-btn" id="proposalYesBtn" onclick="acceptProposal(event)">💍 SAY YES 💕</button>
+                            </div>
+                        `;
+                    }
+                }
+
+                // 1. Deck 3D Card
                 const cardEl = document.createElement('div');
                 cardEl.className = `card-item ${c.bg}`;
                 cardEl.id = `deck_card_${index}`;
                 cardEl.innerHTML = `
-                    <div class="${c.tape}"></div>
-                    <div class="card-header-box">
-                        <span class="card-stamp-badge">${c.tag}</span>
-                        <span class="card-num-badge">#${c.num}</span>
-                    </div>
-                    <div class="card-topic-title">${c.title}</div>
-                    <div class="card-message">${c.text}</div>
-                    <div class="card-footer-box">
-                        <span class="card-doodle-icon">${c.doodle}</span>
-                        <span class="card-love-sign">Forever Yours ♥</span>
+                    <div class="card-texture-layer"></div>
+                    <div class="washi-tape ${c.tape}">${c.tapeText}</div>
+                    <div class="card-inner-content">
+                        <div class="card-header-box">
+                            <span class="card-stamp-badge">${c.tag}</span>
+                            <span class="card-num-badge">#${c.num}</span>
+                        </div>
+                        <div class="card-topic-title">${c.title}</div>
+                        <div class="card-message">${cardBodyHTML}</div>
+                        <div class="card-footer-box">
+                            <span class="card-doodle-icon">${c.doodle}</span>
+                            <span class="card-love-sign">Forever Yours ♥</span>
+                        </div>
                     </div>
                 `;
                 deckContainer.appendChild(cardEl);
@@ -832,34 +1481,74 @@
             updateCardPositions();
         }
 
-        /* ================= OPTIMIZED 3D CARD POSITIONING ================= */
+        /* ================= PROPOSAL "SAY YES" INTERACTION ================= */
+        function acceptProposal(event) {
+            if (event) event.stopPropagation();
+            if (isProposalAccepted) return;
+            isProposalAccepted = true;
+
+            triggerHeartCelebration();
+
+            const proposalBtn = document.getElementById('proposalYesBtn');
+            const proposalBody = document.getElementById('proposalCardBody');
+
+            if (proposalBtn) {
+                gsap.to(proposalBtn, {
+                    scale: 1.2,
+                    opacity: 0,
+                    duration: 0.35,
+                    onComplete: () => {
+                        if (proposalBody) {
+                            proposalBody.innerHTML = `
+                                <div class="proposal-accepted-box">
+                                    <div class="accepted-ring-icon">💍✨💖</div>
+                                    <div class="accepted-title">SHE SAID YES! 😭❤️</div>
+                                    <div class="accepted-sub">Forever & Always My Wife! 💕</div>
+                                </div>
+                            `;
+                        }
+                    }
+                });
+            }
+        }
+
+        /* ================= 3D CARD POSITIONING ================= */
         function updateCardPositions() {
             cardsData.forEach((_, i) => {
                 const el = document.getElementById(`deck_card_${i}`);
                 if (!el) return;
 
+                gsap.killTweensOf(el);
+
                 if (i < activeCardIndex) {
+                    el.style.zIndex = 5;
                     gsap.to(el, {
-                        x: -420,
-                        y: -20,
-                        rotationY: -35,
-                        rotationZ: -10,
-                        scale: 0.88,
+                        x: -440,
+                        y: -15,
+                        z: 40,
+                        rotationY: -8,
+                        rotationZ: -12,
+                        scale: 0.86,
                         opacity: 0,
-                        duration: 0.45,
-                        ease: "power2.out"
+                        duration: 0.4,
+                        ease: "power2.out",
+                        onComplete: () => {
+                            if (i < activeCardIndex) el.style.visibility = 'hidden';
+                        }
                     });
                     el.classList.remove('active-shadow');
                 } else if (i === activeCardIndex) {
+                    el.style.visibility = 'visible';
+                    el.style.zIndex = 35;
                     gsap.to(el, {
                         x: 0,
                         y: 0,
+                        z: 10,
                         rotationX: 0,
                         rotationY: 0,
                         rotationZ: (i % 2 === 0 ? -1 : 1),
                         scale: 1,
                         opacity: 1,
-                        zIndex: 30,
                         duration: 0.45,
                         ease: "back.out(1.2)"
                     });
@@ -867,25 +1556,34 @@
                 } else {
                     const offset = i - activeCardIndex;
                     if (offset <= 3) {
+                        el.style.visibility = 'visible';
+                        el.style.zIndex = 30 - offset;
                         gsap.to(el, {
                             x: 0,
-                            y: offset * 6,
+                            y: offset * 7,
+                            z: -offset * 25,
+                            rotationX: 0,
                             rotationY: 0,
                             rotationZ: (offset % 2 === 0 ? 1 : -1),
-                            scale: 1 - offset * 0.03,
-                            opacity: 1 - offset * 0.2,
-                            zIndex: 30 - offset,
-                            duration: 0.45,
+                            scale: 1 - offset * 0.035,
+                            opacity: 1 - offset * 0.22,
+                            duration: 0.4,
                             ease: "power2.out"
                         });
                         el.classList.remove('active-shadow');
                     } else {
-                        el.style.opacity = '0';
+                        gsap.to(el, {
+                            opacity: 0,
+                            duration: 0.2,
+                            onComplete: () => {
+                                if (i - activeCardIndex > 3) el.style.visibility = 'hidden';
+                            }
+                        });
                     }
                 }
             });
 
-            document.getElementById('cardCounterText').innerText = `${activeCardIndex + 1} / ${totalCardsCount}`;
+            document.getElementById('cardCounterText').innerText = `Card ${activeCardIndex + 1} of ${totalCardsCount}`;
 
             const nextBtn = document.getElementById('nextCardBtn');
             const celBtn = document.getElementById('celebrateBtn');
@@ -917,7 +1615,7 @@
         /* ================= TOUCH / MOUSE SWIPE ================= */
         let startX = 0, startY = 0;
         window.addEventListener('touchstart', (e) => {
-            if (e.target.closest('.top-nav') || e.target.closest('.deck-dock') || isSpreadActive || !isBoxOpened) return;
+            if (e.target.closest('.top-nav') || e.target.closest('.deck-dock') || e.target.closest('.entry-curtain') || isSpreadActive || !isBoxOpened) return;
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
         }, { passive: true });
@@ -942,30 +1640,30 @@
                 btn.innerText = '🃏 Stack View';
             } else {
                 galleryGrid.classList.remove('active');
-                btn.innerText = '🎴 View All 19';
+                btn.innerText = '🎴 View All 18';
             }
         }
 
-        /* ================= SMOOTH RAF-DAMPED PARALLAX ================= */
+        /* ================= PARALLAX TILT ================= */
         let targetRotX = 0, targetRotY = 0;
         let currentRotX = 0, currentRotY = 0;
 
         window.addEventListener('mousemove', (e) => {
-            if (isSpreadActive || !isBoxOpened) return;
+            if (isSpreadActive || !isBoxOpened || currentGraphicMode === 'LOW') return;
             targetRotX = (e.clientY / window.innerHeight - 0.5) * -10;
             targetRotY = (e.clientX / window.innerWidth - 0.5) * 10;
         });
 
-        /* ================= AUDIO ENGINE ================= */
+        /* ================= AUDIO SYNTHESIZER ================= */
         let audioCtx = null;
         let isMusicPlaying = true;
         let musicTimer = null;
 
         const chords = [
-            [261.63, 329.63, 392.00, 523.25], // C
-            [220.00, 261.63, 329.63, 440.00], // Am
-            [174.61, 220.00, 261.63, 349.23], // F
-            [196.00, 246.94, 293.66, 392.00]  // G
+            [261.63, 329.63, 392.00, 523.25],
+            [220.00, 261.63, 329.63, 440.00],
+            [174.61, 220.00, 261.63, 349.23],
+            [196.00, 246.94, 293.66, 392.00]
         ];
         let chordIdx = 0;
 
@@ -1020,7 +1718,7 @@
 
             const filter = audioCtx.createBiquadFilter();
             filter.type = 'bandpass';
-            filter.frequency.setValueAtTime(2400, audioCtx.currentTime);
+            filter.frequency.setValueAtTime(2200, audioCtx.currentTime);
             filter.Q.setValueAtTime(2.0, audioCtx.currentTime);
 
             const gain = audioCtx.createGain();
@@ -1033,51 +1731,53 @@
             noise.start();
         }
 
-        /* ================= HEART CELEBRATION FINALE ================= */
+        /* ================= CELEBRATION CONFETTI ENGINE ================= */
         function triggerHeartCelebration() {
             initAudio();
-            [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+            [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98].forEach((f, i) => {
                 setTimeout(() => {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(f, audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.0);
+                    gain.gain.setValueAtTime(0.14, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.2);
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
                     osc.start();
-                    osc.stop(audioCtx.currentTime + 1.0);
+                    osc.stop(audioCtx.currentTime + 1.2);
                 }, i * 90);
             });
 
-            for (let i = 0; i < 90; i++) createHeartParticle();
+            const count = (currentGraphicMode === 'LOW') ? 40 : (currentGraphicMode === 'NORMAL' ? 80 : 130);
+            for (let i = 0; i < count; i++) createHeartParticle();
         }
 
         function createHeartParticle() {
             const heart = document.createElement('div');
-            heart.innerHTML = '♥';
+            const icons = ['♥', '✨', '💍', '🌸', '💎', '🎉', '💖'];
+            heart.innerHTML = icons[Math.floor(Math.random() * icons.length)];
             heart.style.position = 'fixed';
             heart.style.left = Math.random() * window.innerWidth + 'px';
             heart.style.top = (window.innerHeight + 15) + 'px';
-            heart.style.fontSize = (15 + Math.random() * 22) + 'px';
-            heart.style.color = ['#ff4081', '#ffd700', '#ff80ab', '#ff1744'][Math.floor(Math.random() * 4)];
+            heart.style.fontSize = (16 + Math.random() * 24) + 'px';
+            heart.style.color = ['#ff4081', '#ffd700', '#ff80ab', '#80deea', '#e1bee7', '#ffffff'][Math.floor(Math.random() * 6)];
             heart.style.zIndex = '999';
             heart.style.pointerEvents = 'none';
             document.body.appendChild(heart);
 
             gsap.to(heart, {
                 y: -window.innerHeight - 80,
-                x: (Math.random() - 0.5) * 200,
-                rotation: (Math.random() - 0.5) * 160,
+                x: (Math.random() - 0.5) * 240,
+                rotation: (Math.random() - 0.5) * 180,
                 opacity: 0,
-                duration: 2.5 + Math.random() * 2,
+                duration: 2.4 + Math.random() * 2,
                 ease: "power1.out",
                 onComplete: () => heart.remove()
             });
         }
 
-        /* ================= HIGH PERFORMANCE BOKEH CANVAS ================= */
+        /* ================= BOKEH CANVAS ================= */
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -1089,27 +1789,35 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        for (let i = 0; i < 35; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                r: Math.random() * 2.5 + 1,
-                vy: -Math.random() * 0.35 - 0.15,
-                alpha: Math.random() * 0.45 + 0.15
-            });
+        function adjustParticlesForMode() {
+            particles = [];
+            const count = (currentGraphicMode === 'LOW') ? 15 : (currentGraphicMode === 'NORMAL' ? 35 : 60);
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: Math.random() * 2.6 + 1,
+                    vy: -Math.random() * 0.35 - 0.15,
+                    alpha: Math.random() * 0.45 + 0.15,
+                    color: ['#ff80ab', '#ffd54f', '#81d4fa', '#ba68c8'][Math.floor(Math.random() * 4)]
+                });
+            }
         }
+        adjustParticlesForMode();
 
         function renderFrame() {
-            if (isBoxOpened && !isSpreadActive) {
+            if (isBoxOpened && !isSpreadActive && currentGraphicMode !== 'LOW') {
                 currentRotX += (targetRotX - currentRotX) * 0.08;
                 currentRotY += (targetRotY - currentRotY) * 0.08;
                 deckContainer.style.transform = `rotateX(${currentRotX}deg) rotateY(${currentRotY}deg)`;
+            } else if (currentGraphicMode === 'LOW') {
+                deckContainer.style.transform = 'rotateX(0deg) rotateY(0deg)';
             }
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#ff80ab';
             particles.forEach(p => {
                 ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                 ctx.fill();
@@ -1124,6 +1832,10 @@
             requestAnimationFrame(renderFrame);
         }
         renderFrame();
+
+        window.addEventListener('DOMContentLoaded', () => {
+            run3DStressBenchmark();
+        });
     </script>
 </body>
 </html>
